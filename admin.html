@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Panel - Marble Home</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+
+:root {
+  --bg: #0f0f0f;
+  --surface: #1a1a1a;
+  --surface2: #242424;
+  --border: #2e2e2e;
+  --gold: #c8a96e;
+  --gold2: #a07840;
+  --text: #f0ede8;
+  --sub: #777;
+  --red: #e05252;
+  --green: #52c87a;
+  --blue: #5299e0;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Sarabun', sans-serif;
+  min-height: 100vh;
+}
+
+/* ===== LOGIN ===== */
+#login-screen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+}
+
+.login-box {
+  width: 340px;
+  text-align: center;
+}
+
+.login-logo {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 13px;
+  color: var(--gold);
+  letter-spacing: 4px;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.login-title {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 32px;
+  color: var(--text);
+}
+
+.login-field {
+  width: 100%;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  font-family: 'Sarabun', sans-serif;
+  font-size: 15px;
+  color: var(--text);
+  margin-bottom: 12px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.login-field:focus { border-color: var(--gold); }
+
+.login-btn {
+  width: 100%;
+  padding: 14px;
+  background: var(--gold);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-family: 'Sarabun', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 4px;
+  transition: background 0.2s;
+}
+
+.login-btn:hover { background: var(--gold2); }
+.login-error { color: var(--red); font-size: 13px; margin-top: 10px; }
+
+/* ===== LAYOUT ===== */
+#admin-screen { display: none; }
+
+.topbar {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.admin-badge {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  background: var(--gold);
+  color: #fff;
+  padding: 3px 8px;
+  border-radius: 4px;
+  letter-spacing: 1px;
+}
+
+.topbar-title { font-size: 16px; font-weight: 700; }
+
+.topbar-right { display: flex; gap: 10px; align-items: center; }
+
+.btn-preview {
+  padding: 8px 16px;
+  background: transparent;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  color: var(--sub);
+  font-family: 'Sarabun', sans-serif;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.btn-preview:hover { border-color: var(--gold); color: var(--gold); }
+
+.btn-logout {
+  padding: 8px 14px;
+  background: transparent;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  color: var(--sub);
+  font-family: 'Sarabun', sans-serif;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.main {
+  padding: 24px 20px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* ===== STATS ===== */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 28px;
+}
+
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.stat-label { font-size: 11px; color: var(--sub); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; }
+.stat-val { font-size: 28px; font-weight: 700; color: var(--text); }
+.stat-sub { font-size: 11px; color: var(--gold); margin-top: 2px; }
+
+/* ===== SECTION HEADER ===== */
+.sec-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.sec-title { font-size: 16px; font-weight: 700; }
+
+.btn-add {
+  padding: 9px 18px;
+  background: var(--gold);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-family: 'Sarabun', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-add:hover { background: var(--gold2); }
+
+/* ===== PRODUCT LIST ===== */
+.product-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 32px; }
+
+.product-row {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  transition: border-color 0.2s;
+}
+
+.product-row:hover { border-color: var(--gold); }
+
+.prod-thumb {
+  width: 56px;
+  height: 56px;
+  border-radius: 10px;
+  object-fit: cover;
+  flex-shrink: 0;
+  background: var(--surface2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  overflow: hidden;
+}
+
+.prod-thumb img { width: 100%; height: 100%; object-fit: cover; border-radius: 10px; }
+
+.prod-info { flex: 1; min-width: 0; }
+.prod-name { font-size: 14px; font-weight: 600; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.prod-meta { font-size: 12px; color: var(--sub); }
+
+.prod-price { font-size: 15px; font-weight: 700; color: var(--gold); flex-shrink: 0; }
+
+.prod-cat-badge {
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  background: var(--surface2);
+  color: var(--sub);
+  flex-shrink: 0;
+}
+
+.prod-actions { display: flex; gap: 6px; flex-shrink: 0; }
+
+.btn-edit, .btn-del {
+  padding: 7px 14px;
+  border-radius: 7px;
+  border: none;
+  font-family: 'Sarabun', sans-serif;
+  font-size: 13px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: opacity 0.2s;
+}
+
+.btn-edit { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+.btn-edit:hover { border-color: var(--blue); color: var(--blue); }
+.btn-del { background: transparent; color: var(--red); border: 1px solid transparent; }
+.btn-del:hover { border-color: var(--red); }
+
+/* ===== MODAL ===== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.75);
+  z-index: 200;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modal-overlay.open { display: flex; }
+
+.modal-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  width: 100%;
+  max-width: 520px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 28px;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity:0; transform: scale(0.97); }
+  to   { opacity:1; transform: scale(1); }
+}
+
+.modal-title { font-size: 18px; font-weight: 700; margin-bottom: 24px; }
+
+.form-group { margin-bottom: 18px; }
+.form-label { font-size: 12px; color: var(--sub); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; display: block; }
+
+.form-input, .form-select, .form-textarea {
+  width: 100%;
+  background: var(--surface2);
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-family: 'Sarabun', sans-serif;
+  font-size: 14px;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--gold); }
+.form-textarea { resize: vertical; min-height: 80px; }
+.form-select option { background: var(--surface2); }
+
+/* Image upload */
+.img-upload-area {
+  border: 2px dashed var(--border);
+  border-radius: 10px;
+  padding: 24px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.img-upload-area:hover { border-color: var(--gold); background: rgba(200,169,110,0.05); }
+.img-upload-area input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+
+.upload-icon { font-size: 28px; margin-bottom: 8px; }
+.upload-text { font-size: 13px; color: var(--sub); }
+.upload-hint { font-size: 11px; color: var(--sub); opacity: 0.6; margin-top: 4px; }
+
+.img-preview-wrap {
+  position: relative;
+  display: inline-block;
+  margin-top: 12px;
+}
+
+.img-preview {
+  width: 100%;
+  max-height: 160px;
+  object-fit: cover;
+  border-radius: 8px;
+  display: none;
+}
+
+.img-remove {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background: rgba(0,0,0,0.7);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  font-size: 12px;
+  cursor: pointer;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Badge select */
+.badge-opts { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.badge-opt {
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  cursor: pointer;
+  border: 1.5px solid var(--border);
+  color: var(--sub);
+  transition: all 0.2s;
+  background: transparent;
+  font-family: 'Sarabun', sans-serif;
+}
+
+.badge-opt.sel { border-color: var(--gold); color: var(--gold); background: rgba(200,169,110,0.1); }
+
+/* Form row */
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+/* Modal footer */
+.modal-footer { display: flex; gap: 10px; margin-top: 24px; }
+
+.btn-save {
+  flex: 1;
+  padding: 13px;
+  background: var(--gold);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-family: 'Sarabun', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn-save:hover { background: var(--gold2); }
+
+.btn-cancel {
+  padding: 13px 20px;
+  background: transparent;
+  color: var(--sub);
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-family: 'Sarabun', sans-serif;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+/* ===== CONFIRM DELETE ===== */
+.confirm-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 28px;
+  width: 100%;
+  max-width: 360px;
+  text-align: center;
+}
+
+.confirm-icon { font-size: 40px; margin-bottom: 12px; }
+.confirm-title { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+.confirm-sub { font-size: 14px; color: var(--sub); margin-bottom: 24px; }
+.confirm-btns { display: flex; gap: 10px; }
+.btn-confirm-del { flex: 1; padding: 12px; background: var(--red); color: #fff; border: none; border-radius: 8px; font-family: 'Sarabun', sans-serif; font-size: 15px; font-weight: 700; cursor: pointer; }
+.btn-confirm-cancel { flex: 1; padding: 12px; background: transparent; color: var(--sub); border: 1.5px solid var(--border); border-radius: 8px; font-family: 'Sarabun', sans-serif; font-size: 15px; cursor: pointer; }
+
+/* ===== TOAST ===== */
+.toast {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  padding: 12px 20px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  z-index: 999;
+  transform: translateY(80px);
+  opacity: 0;
+  transition: all 0.3s;
+}
+
+.toast.show { transform: translateY(0); opacity: 1; }
+.toast.success { background: var(--green); color: #fff; }
+.toast.error { background: var(--red); color: #fff; }
+
+/* ===== EMPTY STATE ===== */
+.empty {
+  text-align: center;
+  padding: 48px 20px;
+  color: var(--sub);
+  background: var(--surface);
+  border: 1px dashed var(--border);
+  border-radius: 12px;
+}
+
+.empty-icon { font-size: 40px; margin-bottom: 12px; }
+.empty-text { font-size: 15px; }
+
+/* Mobile */
+@media (max-width: 600px) {
+  .stats-row { grid-template-columns: 1fr 1fr; }
+  .form-row { grid-template-columns: 1fr; }
+  .prod-cat-badge { display: none; }
+  .topbar-title { font-size: 14px; }
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">MARBLE HOME</div>
+    <div class="login-title">Admin Panel</div>
+    <input class="login-field" type="text" id="login-user" placeholder="Username" autocomplete="off">
+    <input class="login-field" type="password" id="login-pass" placeholder="Password" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="login-btn" onclick="doLogin()">เข้าสู่ระบบ</button>
+    <div class="login-error" id="login-err"></div>
+    <div style="font-size:12px;color:var(--sub);margin-top:16px;">demo: admin / 1234</div>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div id="admin-screen">
+  <div class="topbar">
+    <div class="topbar-left">
+      <span class="admin-badge">ADMIN</span>
+      <span class="topbar-title">จัดการสินค้า</span>
+    </div>
+    <div class="topbar-right">
+      <a href="catalog_full.html" target="_blank" class="btn-preview">👁 ดู Catalog</a>
+      <button class="btn-logout" onclick="doLogout()">ออกจากระบบ</button>
+    </div>
+  </div>
+
+  <div class="main">
+    <!-- Stats -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-label">สินค้าทั้งหมด</div>
+        <div class="stat-val" id="stat-total">0</div>
+        <div class="stat-sub">รายการ</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">หมวดหมู่</div>
+        <div class="stat-val" id="stat-cats">0</div>
+        <div class="stat-sub">หมวด</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">พร้อมส่ง</div>
+        <div class="stat-val" id="stat-ready">0</div>
+        <div class="stat-sub">รายการ</div>
+      </div>
+    </div>
+
+    <!-- Product list -->
+    <div class="sec-header">
+      <div class="sec-title">รายการสินค้า</div>
+      <button class="btn-add" onclick="openForm()">+ เพิ่มสินค้า</button>
+    </div>
+    <div id="product-list" class="product-list"></div>
+  </div>
+</div>
+
+<!-- FORM MODAL -->
+<div class="modal-overlay" id="form-modal">
+  <div class="modal-box">
+    <div class="modal-title" id="form-title">เพิ่มสินค้าใหม่</div>
+
+    <div class="form-group">
+      <label class="form-label">รูปสินค้า</label>
+      <div class="img-upload-area" id="upload-area">
+        <input type="file" accept="image/*" onchange="handleImg(event)" id="img-file">
+        <div id="upload-placeholder">
+          <div class="upload-icon">📷</div>
+          <div class="upload-text">กดเพื่อเลือกรูป หรือลากมาวาง</div>
+          <div class="upload-hint">JPG, PNG ขนาดไม่เกิน 5MB</div>
+        </div>
+        <div class="img-preview-wrap" id="preview-wrap">
+          <img id="img-preview" class="img-preview">
+          <button class="img-remove" id="img-remove-btn" onclick="removeImg(event)">✕</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">ชื่อสินค้า *</label>
+      <input class="form-input" type="text" id="f-name" placeholder="เช่น ตู้เสื้อผ้าลายหินอ่อน">
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">หมวดหมู่ *</label>
+        <select class="form-select" id="f-cat">
+          <option value="wardrobe">ตู้เสื้อผ้า</option>
+          <option value="bed">เตียงนอน</option>
+          <option value="table">โต๊ะ</option>
+          <option value="shelf">ชั้นวาง</option>
+          <option value="other">อื่นๆ</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">ขนาด</label>
+        <input class="form-input" type="text" id="f-size" placeholder="เช่น 160×100 ซม.">
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">ราคา (บาท) *</label>
+        <input class="form-input" type="number" id="f-price" placeholder="3390">
+      </div>
+      <div class="form-group">
+        <label class="form-label">ผ่อนเดือนละ</label>
+        <input class="form-input" type="text" id="f-install" placeholder="เช่น 1,130/เดือน × 3 งวด">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">รายละเอียดเพิ่มเติม</label>
+      <textarea class="form-textarea" id="f-desc" placeholder="อธิบายสินค้า..."></textarea>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Badge / สถานะ</label>
+      <div class="badge-opts">
+        <button class="badge-opt" data-val="ready" onclick="toggleBadge(this)">✓ พร้อมส่ง</button>
+        <button class="badge-opt" data-val="hot" onclick="toggleBadge(this)">🔥 ขายดี</button>
+        <button class="badge-opt" data-val="new" onclick="toggleBadge(this)">✨ ใหม่</button>
+        <button class="badge-opt" data-val="sale" onclick="toggleBadge(this)">💚 ลดราคา</button>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeForm()">ยกเลิก</button>
+      <button class="btn-save" onclick="saveProduct()">💾 บันทึก</button>
+    </div>
+  </div>
+</div>
+
+<!-- DELETE CONFIRM -->
+<div class="modal-overlay" id="del-modal">
+  <div class="confirm-box">
+    <div class="confirm-icon">🗑</div>
+    <div class="confirm-title">ลบสินค้า?</div>
+    <div class="confirm-sub" id="del-name">ยืนยันการลบสินค้านี้</div>
+    <div class="confirm-btns">
+      <button class="btn-confirm-cancel" onclick="document.getElementById('del-modal').classList.remove('open')">ยกเลิก</button>
+      <button class="btn-confirm-del" onclick="confirmDelete()">ลบเลย</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ===== DATA =====
+const STORAGE_KEY = 'marble_catalog_products';
+const CAT_NAMES = { wardrobe:'ตู้เสื้อผ้า', bed:'เตียงนอน', table:'โต๊ะ', shelf:'ชั้นวาง', other:'อื่นๆ' };
+const BADGE_LABELS = { ready:'✓ พร้อมส่ง', hot:'🔥 ขายดี', new:'✨ ใหม่', sale:'💚 ลดราคา' };
+
+let products = [];
+let editId = null;
+let deleteId = null;
+let currentImg = null;
+
+function loadProducts() {
+  try { products = JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
+  catch { products = []; }
+  if (!products.length) seedData();
+}
+
+function saveProducts() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(products));
+}
+
+function seedData() {
+  products = [
+    { id:1, name:'ตู้เสื้อผ้าลายหินอ่อน', cat:'wardrobe', size:'160×100 ซม.', price:'3,390', install:'1,130/เดือน × 3 งวด', badge:'hot', desc:'ตู้เสื้อผ้าลายหินอ่อนสวยงาม มีให้เลือก 2 สี', img:null },
+    { id:2, name:'เตียงลายหินอ่อน 5 ฟุต', cat:'bed', size:'150×200 ซม.', price:'5,990', install:'2,000/เดือน × 3 งวด', badge:'new', desc:'', img:null },
+    { id:3, name:'โต๊ะแต่งหน้าลายหินอ่อน', cat:'table', size:'80×40 ซม.', price:'2,490', install:'', badge:'sale', desc:'', img:null },
+  ];
+  saveProducts();
+}
+
+// ===== AUTH =====
+function doLogin() {
+  const u = document.getElementById('login-user').value.trim();
+  const p = document.getElementById('login-pass').value;
+  if (u === 'admin' && p === '1234') {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('admin-screen').style.display = 'block';
+    loadProducts();
+    renderList();
+  } else {
+    document.getElementById('login-err').textContent = 'Username หรือ Password ไม่ถูกต้อง';
+  }
+}
+
+function doLogout() {
+  document.getElementById('admin-screen').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('login-pass').value = '';
+  document.getElementById('login-err').textContent = '';
+}
+
+// ===== RENDER =====
+function renderList() {
+  const list = document.getElementById('product-list');
+  const cats = new Set(products.map(p => p.cat));
+
+  document.getElementById('stat-total').textContent = products.length;
+  document.getElementById('stat-cats').textContent = cats.size;
+  document.getElementById('stat-ready').textContent = products.filter(p => p.badge === 'ready' || p.badge === 'hot').length;
+
+  if (!products.length) {
+    list.innerHTML = `<div class="empty"><div class="empty-icon">📦</div><div class="empty-text">ยังไม่มีสินค้า กดปุ่ม "+ เพิ่มสินค้า" เลย</div></div>`;
+    return;
+  }
+
+  list.innerHTML = products.map(p => `
+    <div class="product-row">
+      <div class="prod-thumb">
+        ${p.img ? `<img src="${p.img}" alt="${p.name}">` : '🪑'}
+      </div>
+      <div class="prod-info">
+        <div class="prod-name">${p.name}</div>
+        <div class="prod-meta">${p.size ? p.size + ' · ' : ''}${p.price ? p.price + ' บาท' : ''}</div>
+      </div>
+      <div class="prod-cat-badge">${CAT_NAMES[p.cat] || p.cat}</div>
+      ${p.badge ? `<span style="font-size:12px;color:var(--gold)">${BADGE_LABELS[p.badge]||''}</span>` : ''}
+      <div class="prod-actions">
+        <button class="btn-edit" onclick="openForm(${p.id})">✏️ แก้ไข</button>
+        <button class="btn-del" onclick="askDelete(${p.id})">🗑</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ===== FORM =====
+function openForm(id = null) {
+  editId = id;
+  currentImg = null;
+  const modal = document.getElementById('form-modal');
+  document.getElementById('form-title').textContent = id ? 'แก้ไขสินค้า' : 'เพิ่มสินค้าใหม่';
+
+  // Reset
+  ['f-name','f-size','f-price','f-install','f-desc'].forEach(i => document.getElementById(i).value = '');
+  document.getElementById('f-cat').value = 'wardrobe';
+  document.querySelectorAll('.badge-opt').forEach(b => b.classList.remove('sel'));
+  resetImgPreview();
+
+  if (id) {
+    const p = products.find(x => x.id === id);
+    if (p) {
+      document.getElementById('f-name').value = p.name || '';
+      document.getElementById('f-cat').value = p.cat || 'wardrobe';
+      document.getElementById('f-size').value = p.size || '';
+      document.getElementById('f-price').value = p.price ? p.price.replace(/,/g,'') : '';
+      document.getElementById('f-install').value = p.install || '';
+      document.getElementById('f-desc').value = p.desc || '';
+      if (p.badge) {
+        document.querySelector(`.badge-opt[data-val="${p.badge}"]`)?.classList.add('sel');
+      }
+      if (p.img) {
+        currentImg = p.img;
+        showPreview(p.img);
+      }
+    }
+  }
+
+  modal.classList.add('open');
+}
+
+function closeForm() {
+  document.getElementById('form-modal').classList.remove('open');
+  editId = null;
+}
+
+function saveProduct() {
+  const name = document.getElementById('f-name').value.trim();
+  const price = document.getElementById('f-price').value.trim();
+  if (!name || !price) { showToast('กรุณากรอกชื่อสินค้าและราคา', 'error'); return; }
+
+  const badge = document.querySelector('.badge-opt.sel')?.dataset.val || '';
+  const priceNum = parseInt(price.replace(/,/g,''));
+  const priceStr = priceNum.toLocaleString();
+
+  if (editId) {
+    const idx = products.findIndex(p => p.id === editId);
+    if (idx >= 0) {
+      products[idx] = { ...products[idx],
+        name,
+        cat: document.getElementById('f-cat').value,
+        size: document.getElementById('f-size').value.trim(),
+        price: priceStr,
+        install: document.getElementById('f-install').value.trim(),
+        desc: document.getElementById('f-desc').value.trim(),
+        badge,
+        img: currentImg
+      };
+    }
+  } else {
+    const newId = Date.now();
+    products.push({
+      id: newId,
+      name,
+      cat: document.getElementById('f-cat').value,
+      size: document.getElementById('f-size').value.trim(),
+      price: priceStr,
+      install: document.getElementById('f-install').value.trim(),
+      desc: document.getElementById('f-desc').value.trim(),
+      badge,
+      img: currentImg
+    });
+  }
+
+  saveProducts();
+  renderList();
+  closeForm();
+  showToast(editId ? '✅ แก้ไขสินค้าแล้ว' : '✅ เพิ่มสินค้าใหม่แล้ว', 'success');
+}
+
+// ===== IMAGE =====
+function handleImg(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  if (file.size > 5 * 1024 * 1024) { showToast('รูปใหญ่เกิน 5MB', 'error'); return; }
+  const reader = new FileReader();
+  reader.onload = ev => {
+    currentImg = ev.target.result;
+    showPreview(currentImg);
+  };
+  reader.readAsDataURL(file);
+}
+
+function showPreview(src) {
+  const img = document.getElementById('img-preview');
+  const wrap = document.getElementById('preview-wrap');
+  const removeBtn = document.getElementById('img-remove-btn');
+  const placeholder = document.getElementById('upload-placeholder');
+  img.src = src;
+  img.style.display = 'block';
+  wrap.style.display = 'inline-block';
+  removeBtn.style.display = 'flex';
+  placeholder.style.display = 'none';
+}
+
+function removeImg(e) {
+  e.stopPropagation();
+  currentImg = null;
+  resetImgPreview();
+  document.getElementById('img-file').value = '';
+}
+
+function resetImgPreview() {
+  document.getElementById('img-preview').style.display = 'none';
+  document.getElementById('preview-wrap').style.display = 'none';
+  document.getElementById('img-remove-btn').style.display = 'none';
+  document.getElementById('upload-placeholder').style.display = 'block';
+  currentImg = null;
+}
+
+// ===== BADGE =====
+function toggleBadge(btn) {
+  const wasSelected = btn.classList.contains('sel');
+  document.querySelectorAll('.badge-opt').forEach(b => b.classList.remove('sel'));
+  if (!wasSelected) btn.classList.add('sel');
+}
+
+// ===== DELETE =====
+function askDelete(id) {
+  deleteId = id;
+  const p = products.find(x => x.id === id);
+  document.getElementById('del-name').textContent = `"${p?.name || 'สินค้านี้'}"`;
+  document.getElementById('del-modal').classList.add('open');
+}
+
+function confirmDelete() {
+  products = products.filter(p => p.id !== deleteId);
+  saveProducts();
+  renderList();
+  document.getElementById('del-modal').classList.remove('open');
+  showToast('🗑 ลบสินค้าแล้ว', 'success');
+}
+
+// ===== TOAST =====
+function showToast(msg, type = 'success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `toast ${type} show`;
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ===== CLOSE MODAL ON OVERLAY =====
+document.getElementById('form-modal').addEventListener('click', e => {
+  if (e.target === document.getElementById('form-modal')) closeForm();
+});
+document.getElementById('del-modal').addEventListener('click', e => {
+  if (e.target === document.getElementById('del-modal')) document.getElementById('del-modal').classList.remove('open');
+});
+</script>
+
+</body>
+</html>
