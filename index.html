@@ -491,7 +491,7 @@ let currentCat = 'all';
 async function loadProducts() {
   showSkeleton();
   try {
-    const res = await fetch(APPS_SCRIPT_URL);
+    const res = await fetch(APPS_SCRIPT_URL + '?action=list');
     const data = await res.json();
     allProducts = data.products || [];
     renderCatTabs();
