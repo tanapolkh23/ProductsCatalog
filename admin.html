@@ -645,16 +645,17 @@ let currentImg = null;
 
 // ===== API HELPERS =====
 async function apiGet() {
-  const res = await fetch(APPS_SCRIPT_URL);
+  const url = APPS_SCRIPT_URL + '?action=list';
+  const res = await fetch(url);
   const data = await res.json();
   return data.products || [];
 }
 
-async function apiPost(action, payload) {
-  const res = await fetch(APPS_SCRIPT_URL, {
-    method: 'POST',
-    body: JSON.stringify({ ...payload, action, password: ADMIN_PASSWORD })
-  });
+async function apiCall(action, payload = {}) {
+  let url = APPS_SCRIPT_URL + '?action=' + action + '&password=' + ADMIN_PASSWORD;
+  if (payload.id)      url += '&id=' + encodeURIComponent(payload.id);
+  if (payload.product) url += '&data=' + encodeURIComponent(JSON.stringify(payload.product));
+  const res = await fetch(url);
   return res.json();
 }
 
@@ -783,10 +784,10 @@ async function saveProduct() {
 
   try {
     if (editId) {
-      await apiPost('update', { id: editId, product });
+      await apiCall('update', { id: editId, product });
       showToast('✅ แก้ไขสินค้าแล้ว', 'success');
     } else {
-      await apiPost('add', { product });
+      await apiCall('add', { product });
       showToast('✅ เพิ่มสินค้าใหม่แล้ว', 'success');
     }
     closeForm();
@@ -850,7 +851,7 @@ function askDelete(id) {
 async function confirmDelete() {
   document.getElementById('del-modal').classList.remove('open');
   try {
-    await apiPost('delete', { id: deleteId });
+    await apiCall('delete', { id: deleteId });
     showToast('🗑 ลบสินค้าแล้ว', 'success');
     await loadProducts();
   } catch {
