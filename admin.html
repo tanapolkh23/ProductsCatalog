@@ -327,50 +327,62 @@ body {
 .img-upload-area {
   border: 2px dashed var(--border);
   border-radius: 10px;
-  padding: 24px;
+  padding: 20px;
   text-align: center;
   cursor: pointer;
   transition: all 0.2s;
   position: relative;
 }
-
 .img-upload-area:hover { border-color: var(--gold); background: rgba(200,169,110,0.05); }
 .img-upload-area input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
-
 .upload-icon { font-size: 28px; margin-bottom: 8px; }
 .upload-text { font-size: 13px; color: var(--sub); }
 .upload-hint { font-size: 11px; color: var(--sub); opacity: 0.6; margin-top: 4px; }
 
-.img-preview-wrap {
+/* Multi-image thumbnails */
+#img-preview-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.img-thumb {
   position: relative;
-  display: inline-block;
-  margin-top: 12px;
-}
-
-.img-preview {
-  width: 100%;
-  max-height: 160px;
-  object-fit: cover;
+  width: 80px;
+  height: 80px;
   border-radius: 8px;
-  display: none;
+  overflow: hidden;
+  border: 1.5px solid var(--border);
+  flex-shrink: 0;
 }
-
-.img-remove {
-  position: absolute;
-  top: 6px;
-  right: 6px;
-  background: rgba(0,0,0,0.7);
-  color: #fff;
-  border: none;
-  border-radius: 50%;
-  width: 24px;
-  height: 24px;
-  font-size: 12px;
-  cursor: pointer;
-  display: none;
-  align-items: center;
-  justify-content: center;
+.img-thumb img {
+  width: 100%; height: 100%; object-fit: cover;
 }
+.img-thumb-del {
+  position: absolute; top: 3px; right: 3px;
+  background: rgba(0,0,0,0.75); color: #fff;
+  border: none; border-radius: 50%;
+  width: 20px; height: 20px; font-size: 10px;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+}
+.img-thumb-badge {
+  position: absolute; bottom: 3px; left: 3px;
+  background: var(--gold); color: #fff;
+  font-size: 9px; padding: 1px 5px; border-radius: 4px;
+}
+.img-add-btn {
+  width: 80px; height: 80px;
+  border: 2px dashed var(--border);
+  border-radius: 8px;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  cursor: pointer; color: var(--sub); font-size: 11px;
+  gap: 4px; transition: all 0.2s; flex-shrink: 0;
+  background: transparent;
+  position: relative;
+}
+.img-add-btn input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.img-add-btn:hover { border-color: var(--gold); color: var(--gold); }
 
 /* Badge select */
 .badge-opts { display: flex; gap: 8px; flex-wrap: wrap; }
@@ -544,16 +556,17 @@ body {
 
     <div class="form-group">
       <label class="form-label">รูปสินค้า</label>
-      <div class="img-upload-area" id="upload-area">
-        <input type="file" accept="image/*" onchange="handleImg(event)" id="img-file">
-        <div id="upload-placeholder">
-          <div class="upload-icon">📷</div>
-          <div class="upload-text">กดเพื่อเลือกรูป หรือลากมาวาง</div>
-          <div class="upload-hint">JPG, PNG ขนาดไม่เกิน 5MB</div>
-        </div>
-        <div class="img-preview-wrap" id="preview-wrap">
-          <img id="img-preview" class="img-preview">
-          <button class="img-remove" id="img-remove-btn" onclick="removeImg(event)">✕</button>
+      <!-- รูปที่เพิ่มแล้ว -->
+      <div id="img-preview-list"></div>
+      <!-- ปุ่มเพิ่มรูป + placeholder -->
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+        <button class="img-add-btn" id="upload-area">
+          <input type="file" accept="image/*" multiple onchange="handleImg(event)" id="img-file">
+          <span style="font-size:22px">📷</span>
+          <span>เพิ่มรูป</span>
+        </button>
+        <div id="upload-placeholder" style="font-size:12px;color:var(--sub)">
+          เลือกได้หลายรูป<br>JPG, PNG ≤10MB
         </div>
       </div>
     </div>
@@ -632,21 +645,22 @@ body {
 <script>
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxcRHYBqvoLKVSmuF-PnM8dJM4gy6cYhiElXerfPx-NMJh6Voz4s5Ntmj0Vb8HDDDE/exec';
 const ADMIN_PASSWORD  = 'admin1234';
+const IMGBB_KEY       = 'aed6617dbdca6c61ba88052b3d1930de';
 const BADGE_LABELS    = { ready:'✓ พร้อมส่ง', hot:'🔥 ขายดี', new:'✨ ใหม่', sale:'💚 ลดราคา' };
 
 let products   = [];
 let editId     = null;
 let deleteId   = null;
-let currentImg = null;
+let imgFiles   = []; // เก็บไฟล์รูปที่รอ upload
 
-// ===== JSONP (แก้ CORS) =====
+// ===== JSONP =====
 function jsonp(url) {
   return new Promise((resolve, reject) => {
-    const cb = 'cb_' + Date.now();
+    const cb = 'cb_' + Date.now() + '_' + Math.random().toString(36).slice(2);
     const script = document.createElement('script');
     script.src = url + (url.includes('?') ? '&' : '?') + 'callback=' + cb;
     window[cb] = (data) => { delete window[cb]; document.body.removeChild(script); resolve(data); };
-    script.onerror = () => reject(new Error('JSONP failed'));
+    script.onerror = () => { delete window[cb]; reject(new Error('JSONP failed')); };
     document.body.appendChild(script);
   });
 }
@@ -659,24 +673,43 @@ async function apiGet() {
 async function apiCall(action, payload = {}) {
   let url = APPS_SCRIPT_URL + '?action=' + action + '&password=' + ADMIN_PASSWORD;
   if (payload.id)      url += '&id='   + encodeURIComponent(payload.id);
-  if (payload.product) {
-    // ส่งแค่ข้อมูลข้อความ ไม่รวมรูป (รูปส่งแยก)
-    const p = {...payload.product};
-    delete p.img; // ลบรูปออกก่อน เพราะ base64 ยาวเกิน URL limit
-    url += '&data=' + encodeURIComponent(JSON.stringify(p));
+  if (payload.product) url += '&data=' + encodeURIComponent(JSON.stringify(payload.product));
+  return jsonp(url);
+}
+
+// ===== UPLOAD รูปไป imgbb =====
+async function uploadToImgbb(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      const base64 = e.target.result.split(',')[1];
+      const formData = new FormData();
+      formData.append('key', IMGBB_KEY);
+      formData.append('image', base64);
+      formData.append('name', file.name);
+      try {
+        const res  = await fetch('https://api.imgbb.com/1/upload', { method:'POST', body: formData });
+        const data = await res.json();
+        if (data.success) resolve(data.data.url);
+        else reject(new Error(data.error?.message || 'Upload failed'));
+      } catch(err) { reject(err); }
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+async function uploadAllImages() {
+  if (!imgFiles.length) return [];
+  const urls = [];
+  for (let i = 0; i < imgFiles.length; i++) {
+    showToast(`⏳ กำลัง upload รูป ${i+1}/${imgFiles.length}...`, 'success');
+    const url = await uploadToImgbb(imgFiles[i]);
+    urls.push(url);
   }
-  return jsonp(url);
+  return urls;
 }
 
-async function apiUploadImg(id, base64) {
-  // แยก upload รูปเพราะ base64 ยาวเกิน — ใช้ chunk แยก call
-  let url = APPS_SCRIPT_URL + '?action=update&password=' + ADMIN_PASSWORD;
-  url += '&id=' + encodeURIComponent(id);
-  url += '&data=' + encodeURIComponent(JSON.stringify({ img: base64 }));
-  return jsonp(url);
-}
-
-// ===== SESSION — เก็บ login ไว้ใน sessionStorage =====
+// ===== SESSION =====
 function checkSession() {
   if (sessionStorage.getItem('admin_logged_in') === 'yes') {
     document.getElementById('login-screen').style.display = 'none';
@@ -701,7 +734,7 @@ function doLogin() {
 function doLogout() {
   sessionStorage.removeItem('admin_logged_in');
   document.getElementById('admin-screen').style.display = 'none';
-  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('login-screen').style.display  = 'flex';
   document.getElementById('login-pass').value = '';
 }
 
@@ -714,7 +747,7 @@ async function loadProducts() {
     renderList();
   } catch {
     document.getElementById('product-list').innerHTML =
-      `<div class="empty"><div class="empty-icon">⚠️</div><div class="empty-text">โหลดไม่ได้ กรุณาตรวจสอบ Apps Script</div></div>`;
+      `<div class="empty"><div class="empty-icon">⚠️</div><div class="empty-text">โหลดไม่ได้ ตรวจสอบ Apps Script</div></div>`;
   }
 }
 
@@ -730,10 +763,13 @@ function renderList() {
     list.innerHTML = `<div class="empty"><div class="empty-icon">📦</div><div class="empty-text">ยังไม่มีสินค้า</div></div>`;
     return;
   }
-  list.innerHTML = products.map(p => `
+  list.innerHTML = products.map(p => {
+    const imgs = p.img ? p.img.split('|').filter(Boolean) : [];
+    return `
     <div class="product-row">
       <div class="prod-thumb">
-        ${p.img ? `<img src="${p.img}" alt="${p.name}">` : '🪑'}
+        ${imgs.length ? `<img src="${imgs[0]}" alt="${p.name}">` : '🪑'}
+        ${imgs.length > 1 ? `<span style="position:absolute;bottom:2px;right:4px;background:#000a;color:#fff;font-size:10px;padding:1px 5px;border-radius:8px">+${imgs.length-1}</span>` : ''}
       </div>
       <div class="prod-info">
         <div class="prod-name">${p.name}</div>
@@ -745,12 +781,13 @@ function renderList() {
         <button class="btn-edit" onclick="openForm('${p.id}')">✏️ แก้ไข</button>
         <button class="btn-del"  onclick="askDelete('${p.id}')">🗑</button>
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
 
 // ===== FORM =====
 function openForm(id = null) {
-  editId = id; currentImg = null;
+  editId = id; imgFiles = [];
   document.getElementById('form-title').textContent = id ? 'แก้ไขสินค้า' : 'เพิ่มสินค้าใหม่';
   ['f-name','f-size','f-price','f-install','f-desc'].forEach(i => document.getElementById(i).value = '');
   document.getElementById('f-cat').value = 'ตู้เสื้อผ้า';
@@ -767,7 +804,11 @@ function openForm(id = null) {
       document.getElementById('f-install').value = p.install || '';
       document.getElementById('f-desc').value    = p.desc    || '';
       if (p.badge) document.querySelector(`.badge-opt[data-val="${p.badge}"]`)?.classList.add('sel');
-      if (p.img)   { currentImg = p.img; showPreview(p.img); }
+      // โหลดรูปเดิม
+      if (p.img) {
+        const urls = p.img.split('|').filter(Boolean);
+        renderImgPreviews(urls);
+      }
     }
   }
   document.getElementById('form-modal').classList.add('open');
@@ -775,7 +816,7 @@ function openForm(id = null) {
 
 function closeForm() {
   document.getElementById('form-modal').classList.remove('open');
-  editId = null;
+  editId = null; imgFiles = [];
 }
 
 async function saveProduct() {
@@ -783,88 +824,113 @@ async function saveProduct() {
   const price = document.getElementById('f-price').value.trim();
   if (!name || !price) { showToast('กรุณากรอกชื่อสินค้าและราคา', 'error'); return; }
 
-  const badge    = document.querySelector('.badge-opt.sel')?.dataset.val || '';
-  const priceStr = parseInt(price.replace(/,/g,'')).toLocaleString();
-  const product  = {
-    name, badge, priceStr,
-    cat:     document.getElementById('f-cat').value,
-    size:    document.getElementById('f-size').value.trim(),
-    price:   priceStr,
-    install: document.getElementById('f-install').value.trim(),
-    desc:    document.getElementById('f-desc').value.trim(),
-  };
-
   const btn = document.querySelector('.btn-save');
   btn.textContent = '⏳ กำลังบันทึก...'; btn.disabled = true;
 
   try {
-    let savedId = editId;
+    // 1. upload รูปใหม่ก่อน
+    const newUrls = await uploadAllImages();
+
+    // 2. รวมกับรูปเดิม (ถ้า edit)
+    let existingUrls = [];
+    if (editId) {
+      const old = products.find(p => p.id == editId);
+      existingUrls = old?.img ? old.img.split('|').filter(Boolean) : [];
+    }
+    // เก็บรูปที่ยังอยู่ใน preview (ไม่ถูกลบ)
+    const keptUrls = getKeptUrls();
+    const allUrls  = [...keptUrls, ...newUrls];
+
+    const badge    = document.querySelector('.badge-opt.sel')?.dataset.val || '';
+    const priceStr = parseInt(price.replace(/,/g,'')).toLocaleString();
+    const product  = {
+      name,
+      cat:     document.getElementById('f-cat').value,
+      size:    document.getElementById('f-size').value.trim(),
+      price:   priceStr,
+      install: document.getElementById('f-install').value.trim(),
+      desc:    document.getElementById('f-desc').value.trim(),
+      badge,
+      img:     allUrls.join('|') // เก็บหลาย URL คั่นด้วย |
+    };
+
     if (editId) {
       await apiCall('update', { id: editId, product });
     } else {
-      const res = await apiCall('add', { product });
-      savedId = res.id;
-    }
-
-    // ถ้ามีรูปใหม่ — upload แยก
-    if (currentImg && currentImg !== (products.find(p=>p.id==editId)||{}).img) {
-      await apiUploadImg(savedId, currentImg);
+      await apiCall('add', { product });
     }
 
     showToast(editId ? '✅ แก้ไขแล้ว' : '✅ เพิ่มสินค้าแล้ว', 'success');
     closeForm();
     await loadProducts();
-  } catch {
-    showToast('❌ บันทึกไม่สำเร็จ', 'error');
+  } catch(err) {
+    showToast('❌ ' + (err.message || 'บันทึกไม่สำเร็จ'), 'error');
   } finally {
     btn.textContent = '💾 บันทึก'; btn.disabled = false;
   }
 }
 
-// ===== IMAGE =====
+// ===== IMAGE PREVIEW (หลายรูป) =====
 function handleImg(e) {
-  const file = e.target.files[0];
-  if (!file) return;
-  if (file.size > 2 * 1024 * 1024) { showToast('รูปใหญ่เกิน 2MB กรุณาลดขนาดก่อน', 'error'); return; }
-  const reader = new FileReader();
-  reader.onload = ev => {
-    // Resize ก่อน เพื่อลดขนาด base64
-    const img = new Image();
-    img.onload = () => {
-      const canvas = document.createElement('canvas');
-      const MAX = 600;
-      let w = img.width, h = img.height;
-      if (w > MAX) { h = h * MAX / w; w = MAX; }
-      if (h > MAX) { w = w * MAX / h; h = MAX; }
-      canvas.width = w; canvas.height = h;
-      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-      currentImg = canvas.toDataURL('image/jpeg', 0.7);
-      showPreview(currentImg);
-    };
-    img.src = ev.target.result;
-  };
-  reader.readAsDataURL(file);
+  const files = Array.from(e.target.files);
+  if (!files.length) return;
+  const oversized = files.filter(f => f.size > 10 * 1024 * 1024);
+  if (oversized.length) { showToast('รูปบางไฟล์ใหญ่เกิน 10MB', 'error'); return; }
+  imgFiles = [...imgFiles, ...files];
+  // preview รูปใหม่
+  files.forEach(file => {
+    const reader = new FileReader();
+    reader.onload = ev => addImgPreview(ev.target.result, null, file.name);
+    reader.readAsDataURL(file);
+  });
+  e.target.value = ''; // reset input
 }
 
-function showPreview(src) {
-  document.getElementById('img-preview').src         = src;
-  document.getElementById('img-preview').style.display    = 'block';
-  document.getElementById('preview-wrap').style.display   = 'inline-block';
-  document.getElementById('img-remove-btn').style.display = 'flex';
+function addImgPreview(src, existingUrl = null, label = '') {
+  const wrap = document.getElementById('img-preview-list');
+  const div  = document.createElement('div');
+  div.className = 'img-thumb';
+  div.dataset.url = existingUrl || '';
+  div.dataset.new = existingUrl ? 'false' : 'true';
+  div.innerHTML = `
+    <img src="${src}" alt="${label}">
+    <button class="img-thumb-del" onclick="removeImgThumb(this)">✕</button>
+    ${!existingUrl ? '<span class="img-thumb-badge">ใหม่</span>' : ''}
+  `;
+  wrap.appendChild(div);
   document.getElementById('upload-placeholder').style.display = 'none';
 }
 
-function removeImg(e) {
-  e.stopPropagation(); currentImg = null; resetImgPreview();
-  document.getElementById('img-file').value = '';
+function renderImgPreviews(urls) {
+  urls.forEach(url => addImgPreview(url, url));
+}
+
+function removeImgThumb(btn) {
+  const div  = btn.closest('.img-thumb');
+  const isNew = div.dataset.new === 'true';
+  const label = div.querySelector('img').alt;
+  if (isNew) {
+    // ลบออกจาก imgFiles
+    imgFiles = imgFiles.filter(f => f.name !== label);
+  }
+  div.remove();
+  if (!document.querySelectorAll('.img-thumb').length) {
+    document.getElementById('upload-placeholder').style.display = 'block';
+  }
+}
+
+function getKeptUrls() {
+  return Array.from(document.querySelectorAll('.img-thumb'))
+    .filter(d => d.dataset.new === 'false')
+    .map(d => d.dataset.url)
+    .filter(Boolean);
 }
 
 function resetImgPreview() {
-  document.getElementById('img-preview').style.display    = 'none';
-  document.getElementById('preview-wrap').style.display   = 'none';
-  document.getElementById('img-remove-btn').style.display = 'none';
+  document.getElementById('img-preview-list').innerHTML = '';
   document.getElementById('upload-placeholder').style.display = 'block';
-  currentImg = null;
+  document.getElementById('img-file').value = '';
+  imgFiles = [];
 }
 
 // ===== BADGE =====
@@ -888,9 +954,7 @@ async function confirmDelete() {
     await apiCall('delete', { id: deleteId });
     showToast('🗑 ลบสินค้าแล้ว', 'success');
     await loadProducts();
-  } catch {
-    showToast('❌ ลบไม่สำเร็จ', 'error');
-  }
+  } catch { showToast('❌ ลบไม่สำเร็จ', 'error'); }
 }
 
 // ===== TOAST =====
@@ -900,7 +964,6 @@ function showToast(msg, type='success') {
   setTimeout(() => t.classList.remove('show'), 3000);
 }
 
-// ===== MODAL CLOSE =====
 document.getElementById('form-modal').addEventListener('click', e => {
   if (e.target === document.getElementById('form-modal')) closeForm();
 });
@@ -908,7 +971,6 @@ document.getElementById('del-modal').addEventListener('click', e => {
   if (e.target === document.getElementById('del-modal')) document.getElementById('del-modal').classList.remove('open');
 });
 
-// ===== INIT =====
 checkSession();
 </script>
 </body>
