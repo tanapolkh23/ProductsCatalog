@@ -440,239 +440,14 @@
     </div>
     <button class="cart-btn">💬 ติดต่อร้าน</button>
   </div>
-
-  <div class="cat-scroll">
-    <button class="cat-tab active" onclick="filterCat('all')">ทั้งหมด</button>
-    <button class="cat-tab" onclick="filterCat('wardrobe')">ตู้เสื้อผ้า</button>
-    <button class="cat-tab" onclick="filterCat('bed')">เตียงนอน</button>
-    <button class="cat-tab" onclick="filterCat('table')">โต๊ะ</button>
-    <button class="cat-tab" onclick="filterCat('shelf')">ชั้นวาง</button>
+  <div class="cat-scroll" id="cat-tabs">
+    <!-- render by JS -->
   </div>
 </div>
 
 <!-- Body -->
-<div class="body">
-
-  <!-- ALL VIEW -->
-  <div id="all" class="section visible">
-
-    <div class="all-section">
-      <div class="all-section-header">
-        <div class="all-section-title">🏆 ขายดี</div>
-        <div class="all-section-more" onclick="filterCat('wardrobe')">ดูทั้งหมด →</div>
-      </div>
-      <div class="product-grid">
-        <div class="product-card featured" onclick="openModal(0)">
-          <div class="p-img">
-            <div class="p-img-inner marble-white"></div>
-            <span class="p-badge badge-hot">🔥 ขายดี</span>
-          </div>
-          <div class="p-info">
-            <div class="p-name">ตู้เสื้อผ้าลายหินอ่อน</div>
-            <div class="p-size">160 × 100 ซม.</div>
-            <div class="p-price">3,390 <span>บาท</span></div>
-            <div class="p-install">ผ่อน 1,130/เดือน × 3 งวด</div>
-            <div class="p-colors">
-              <div class="p-dot white"></div>
-              <div class="p-dot black"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="all-section">
-      <div class="all-section-header">
-        <div class="all-section-title">🛏 เตียงนอน</div>
-        <div class="all-section-more" onclick="filterCat('bed')">ดูทั้งหมด →</div>
-      </div>
-      <div class="product-grid">
-        <div class="product-card" onclick="openModal(1)">
-          <div class="p-img">
-            <div class="p-img-inner marble-gray"></div>
-            <span class="p-badge badge-new">✨ ใหม่</span>
-          </div>
-          <div class="p-info">
-            <div class="p-name">เตียงลายหินอ่อน 5 ฟุต</div>
-            <div class="p-size">150 × 200 ซม.</div>
-            <div class="p-price">5,990 <span>บาท</span></div>
-            <div class="p-install">ผ่อน 2,000/เดือน</div>
-          </div>
-          <button class="p-btn" onclick="event.stopPropagation(); sendInterest('เตียงลายหินอ่อน 5 ฟุต')">สนใจ</button>
-        </div>
-        <div class="product-card" onclick="openModal(2)">
-          <div class="p-img">
-            <div class="p-img-inner marble-beige"></div>
-            <span class="p-badge badge-ready">✓ พร้อมส่ง</span>
-          </div>
-          <div class="p-info">
-            <div class="p-name">เตียงลายหินอ่อน 6 ฟุต</div>
-            <div class="p-size">180 × 200 ซม.</div>
-            <div class="p-price">6,990 <span>บาท</span></div>
-            <div class="p-install">ผ่อน 2,330/เดือน</div>
-          </div>
-          <button class="p-btn" onclick="event.stopPropagation(); sendInterest('เตียงลายหินอ่อน 6 ฟุต')">สนใจ</button>
-        </div>
-      </div>
-    </div>
-
-    <div class="all-section">
-      <div class="all-section-header">
-        <div class="all-section-title">🪑 โต๊ะ & ชั้นวาง</div>
-        <div class="all-section-more" onclick="filterCat('table')">ดูทั้งหมด →</div>
-      </div>
-      <div class="product-grid">
-        <div class="product-card" onclick="openModal(3)">
-          <div class="p-img">
-            <div class="p-img-inner marble-white"></div>
-            <span class="p-badge badge-sale">💚 ลดราคา</span>
-          </div>
-          <div class="p-info">
-            <div class="p-name">โต๊ะแต่งหน้าลายหินอ่อน</div>
-            <div class="p-size">80 × 40 ซม.</div>
-            <div class="p-price">2,490 <span>บาท</span></div>
-          </div>
-          <button class="p-btn" onclick="event.stopPropagation(); sendInterest('โต๊ะแต่งหน้าลายหินอ่อน')">สนใจ</button>
-        </div>
-        <div class="product-card" onclick="openModal(4)">
-          <div class="p-img">
-            <div class="p-img-inner marble-black"></div>
-            <span class="p-badge badge-new">✨ ใหม่</span>
-          </div>
-          <div class="p-info">
-            <div class="p-name">ชั้นวางทีวีลายหินอ่อน</div>
-            <div class="p-size">150 × 45 ซม.</div>
-            <div class="p-price">3,190 <span>บาท</span></div>
-          </div>
-          <button class="p-btn" onclick="event.stopPropagation(); sendInterest('ชั้นวางทีวีลายหินอ่อน')">สนใจ</button>
-        </div>
-      </div>
-    </div>
-
-  </div>
-
-  <!-- WARDROBE -->
-  <div id="wardrobe" class="section">
-    <div class="section-title">ตู้เสื้อผ้า</div>
-    <div class="section-count">3 รายการ</div>
-    <div class="product-grid">
-      <div class="product-card featured" onclick="openModal(0)">
-        <div class="p-img">
-          <div class="p-img-inner marble-white"></div>
-          <span class="p-badge badge-hot">🔥 ขายดี</span>
-        </div>
-        <div class="p-info">
-          <div class="p-name">ตู้เสื้อผ้าลายหินอ่อน</div>
-          <div class="p-size">160 × 100 ซม.</div>
-          <div class="p-price">3,390 <span>บาท</span></div>
-          <div class="p-install">ผ่อน 1,130/เดือน × 3</div>
-          <div class="p-colors">
-            <div class="p-dot white"></div>
-            <div class="p-dot black"></div>
-          </div>
-        </div>
-      </div>
-      <div class="product-card" onclick="openModal(5)">
-        <div class="p-img">
-          <div class="p-img-inner marble-black"></div>
-          <span class="p-badge badge-ready">✓ พร้อมส่ง</span>
-        </div>
-        <div class="p-info">
-          <div class="p-name">ตู้เสื้อผ้า 2 บาน</div>
-          <div class="p-size">120 × 80 ซม.</div>
-          <div class="p-price">2,890 <span>บาท</span></div>
-          <div class="p-install">ผ่อน 963/เดือน</div>
-        </div>
-        <button class="p-btn" onclick="event.stopPropagation(); sendInterest('ตู้เสื้อผ้า 2 บาน')">สนใจ</button>
-      </div>
-      <div class="product-card" onclick="openModal(6)">
-        <div class="p-img">
-          <div class="p-img-inner marble-gray"></div>
-          <span class="p-badge badge-new">✨ ใหม่</span>
-        </div>
-        <div class="p-info">
-          <div class="p-name">ตู้เสื้อผ้า 4 บาน</div>
-          <div class="p-size">200 × 120 ซม.</div>
-          <div class="p-price">4,990 <span>บาท</span></div>
-          <div class="p-install">ผ่อน 1,663/เดือน</div>
-        </div>
-        <button class="p-btn" onclick="event.stopPropagation(); sendInterest('ตู้เสื้อผ้า 4 บาน')">สนใจ</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- BED -->
-  <div id="bed" class="section">
-    <div class="section-title">เตียงนอน</div>
-    <div class="section-count">2 รายการ</div>
-    <div class="product-grid">
-      <div class="product-card featured" onclick="openModal(1)">
-        <div class="p-img">
-          <div class="p-img-inner marble-gray"></div>
-          <span class="p-badge badge-new">✨ ใหม่</span>
-        </div>
-        <div class="p-info">
-          <div class="p-name">เตียงลายหินอ่อน 5 ฟุต</div>
-          <div class="p-size">150 × 200 ซม.</div>
-          <div class="p-price">5,990 <span>บาท</span></div>
-          <div class="p-install">ผ่อน 2,000/เดือน × 3</div>
-        </div>
-      </div>
-      <div class="product-card featured" onclick="openModal(2)">
-        <div class="p-img">
-          <div class="p-img-inner marble-beige"></div>
-          <span class="p-badge badge-ready">✓ พร้อมส่ง</span>
-        </div>
-        <div class="p-info">
-          <div class="p-name">เตียงลายหินอ่อน 6 ฟุต</div>
-          <div class="p-size">180 × 200 ซม.</div>
-          <div class="p-price">6,990 <span>บาท</span></div>
-          <div class="p-install">ผ่อน 2,330/เดือน × 3</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- TABLE -->
-  <div id="table" class="section">
-    <div class="section-title">โต๊ะ</div>
-    <div class="section-count">1 รายการ</div>
-    <div class="product-grid">
-      <div class="product-card featured" onclick="openModal(3)">
-        <div class="p-img">
-          <div class="p-img-inner marble-white"></div>
-          <span class="p-badge badge-sale">💚 ลดราคา</span>
-        </div>
-        <div class="p-info">
-          <div class="p-name">โต๊ะแต่งหน้าลายหินอ่อน</div>
-          <div class="p-size">80 × 40 ซม.</div>
-          <div class="p-price">2,490 <span>บาท</span></div>
-          <div class="p-install">ลดจาก 2,990 บาท</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- SHELF -->
-  <div id="shelf" class="section">
-    <div class="section-title">ชั้นวาง</div>
-    <div class="section-count">1 รายการ</div>
-    <div class="product-grid">
-      <div class="product-card featured" onclick="openModal(4)">
-        <div class="p-img">
-          <div class="p-img-inner marble-black"></div>
-          <span class="p-badge badge-new">✨ ใหม่</span>
-        </div>
-        <div class="p-info">
-          <div class="p-name">ชั้นวางทีวีลายหินอ่อน</div>
-          <div class="p-size">150 × 45 ซม.</div>
-          <div class="p-price">3,190 <span>บาท</span></div>
-          <div class="p-install">พร้อมส่ง</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
+<div class="body" id="catalog-body">
+  <!-- render by JS -->
 </div>
 
 <!-- Modal -->
@@ -700,34 +475,176 @@
 <div class="toast" id="toast"></div>
 
 <script>
-const products = [
-  { name: 'ตู้เสื้อผ้าลายหินอ่อน', cat: 'ตู้เสื้อผ้า', size: '160 × 100 ซม.', price: '3,390', install: '1,130 บาท/เดือน × 3 งวด', bg: 'marble-white', tags: ['🚚 พร้อมส่ง', '✨ ลายหินอ่อน', '🔒 มีลิ้นชัก', '🎨 มี 2 สี'] },
-  { name: 'เตียงลายหินอ่อน 5 ฟุต', cat: 'เตียงนอน', size: '150 × 200 ซม.', price: '5,990', install: '2,000 บาท/เดือน × 3 งวด', bg: 'marble-gray', tags: ['🚚 พร้อมส่ง', '✨ ลายหินอ่อน', '🛏 5 ฟุต'] },
-  { name: 'เตียงลายหินอ่อน 6 ฟุต', cat: 'เตียงนอน', size: '180 × 200 ซม.', price: '6,990', install: '2,330 บาท/เดือน × 3 งวด', bg: 'marble-beige', tags: ['🚚 พร้อมส่ง', '✨ ลายหินอ่อน', '🛏 6 ฟุต'] },
-  { name: 'โต๊ะแต่งหน้าลายหินอ่อน', cat: 'โต๊ะ', size: '80 × 40 ซม.', price: '2,490', install: 'ลดจาก 2,990 บาท', bg: 'marble-white', tags: ['🚚 พร้อมส่ง', '💚 ลดราคา', '✨ ลายหินอ่อน'] },
-  { name: 'ชั้นวางทีวีลายหินอ่อน', cat: 'ชั้นวาง', size: '150 × 45 ซม.', price: '3,190', install: 'พร้อมส่งทันที', bg: 'marble-black', tags: ['🚚 พร้อมส่ง', '✨ ลายหินอ่อน', '📺 วางทีวีได้'] },
-  { name: 'ตู้เสื้อผ้า 2 บาน', cat: 'ตู้เสื้อผ้า', size: '120 × 80 ซม.', price: '2,890', install: '963 บาท/เดือน × 3 งวด', bg: 'marble-black', tags: ['🚚 พร้อมส่ง', '✨ ลายหินอ่อน'] },
-  { name: 'ตู้เสื้อผ้า 4 บาน', cat: 'ตู้เสื้อผ้า', size: '200 × 120 ซม.', price: '4,990', install: '1,663 บาท/เดือน × 3 งวด', bg: 'marble-gray', tags: ['✨ ใหม่', '✨ ลายหินอ่อน', '🔒 มีลิ้นชัก'] },
-];
+// ===================================================
+// 🔧 ใส่ URL ของ Apps Script ที่ Deploy แล้วตรงนี้
+// ===================================================
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxcRHYBqvoLKVSmuF-PnM8dJM4gy6cYhiElXerfPx-NMJh6Voz4s5Ntmj0Vb8HDDDE/exec';
 
-function filterCat(cat) {
-  document.querySelectorAll('.section').forEach(s => s.classList.remove('visible'));
-  document.getElementById(cat).classList.add('visible');
-  document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
-  event.target.classList.add('active');
+const BADGE_LABELS = { ready:'✓ พร้อมส่ง', hot:'🔥 ขายดี', new:'✨ ใหม่', sale:'💚 ลดราคา' };
+const BADGE_CLASSES = { ready:'badge-ready', hot:'badge-hot', new:'badge-new', sale:'badge-sale' };
+const CAT_ICONS = { 'ตู้เสื้อผ้า':'👔', 'เตียงนอน':'🛏', 'โต๊ะ':'🪑', 'ชั้นวาง':'📚', 'อื่นๆ':'📦' };
+
+let allProducts = [];
+let currentCat = 'all';
+
+// ===== FETCH DATA =====
+async function loadProducts() {
+  showSkeleton();
+  try {
+    const res = await fetch(APPS_SCRIPT_URL);
+    const data = await res.json();
+    allProducts = data.products || [];
+    renderCatTabs();
+    renderCatalog('all');
+  } catch (e) {
+    document.getElementById('catalog-body').innerHTML = `
+      <div style="text-align:center;padding:60px 20px;color:#888">
+        <div style="font-size:36px;margin-bottom:12px">⚠️</div>
+        <div>ไม่สามารถโหลดสินค้าได้<br>กรุณาตรวจสอบการเชื่อมต่อ</div>
+      </div>`;
+  }
 }
 
+// ===== SKELETON LOADING =====
+function showSkeleton() {
+  const body = document.getElementById('catalog-body');
+  body.innerHTML = `
+    <div style="padding:20px 16px">
+      ${[1,2,3,4].map(() => `
+        <div style="background:#fff;border-radius:16px;margin-bottom:12px;overflow:hidden;display:grid;grid-template-columns:1fr 1fr">
+          <div style="height:160px;background:linear-gradient(90deg,#f0ece6 25%,#e8e4de 50%,#f0ece6 75%);background-size:200% 100%;animation:shimmer 1.2s infinite"></div>
+          <div style="padding:14px">
+            <div style="height:14px;background:#f0ece6;border-radius:4px;margin-bottom:8px;animation:shimmer 1.2s infinite"></div>
+            <div style="height:10px;background:#f0ece6;border-radius:4px;width:60%;margin-bottom:8px;animation:shimmer 1.2s infinite"></div>
+            <div style="height:18px;background:#f0ece6;border-radius:4px;width:50%;animation:shimmer 1.2s infinite"></div>
+          </div>
+        </div>`).join('')}
+    </div>
+    <style>@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}</style>`;
+}
+
+// ===== RENDER CATEGORY TABS =====
+function renderCatTabs() {
+  const cats = ['all', ...new Set(allProducts.map(p => p.cat))];
+  const catNames = { all: 'ทั้งหมด' };
+  allProducts.forEach(p => { catNames[p.cat] = p.cat; });
+
+  document.getElementById('cat-tabs').innerHTML = cats.map(c => `
+    <button class="cat-tab ${c === 'all' ? 'active' : ''}"
+      onclick="filterCat('${c}', this)">
+      ${c === 'all' ? 'ทั้งหมด' : (CAT_ICONS[c] || '') + ' ' + c}
+    </button>`).join('');
+}
+
+// ===== RENDER CATALOG =====
+function renderCatalog(cat) {
+  currentCat = cat;
+  const body = document.getElementById('catalog-body');
+
+  if (cat === 'all') {
+    // Group by category
+    const cats = [...new Set(allProducts.map(p => p.cat))];
+    if (!cats.length) {
+      body.innerHTML = `<div style="text-align:center;padding:60px 20px;color:#888"><div style="font-size:36px">📦</div><div style="margin-top:12px">ยังไม่มีสินค้า</div></div>`;
+      return;
+    }
+    body.innerHTML = cats.map(c => {
+      const items = allProducts.filter(p => p.cat === c);
+      return `
+        <div class="body" style="padding:20px 16px 0">
+          <div class="all-section">
+            <div class="all-section-header">
+              <div class="all-section-title">${CAT_ICONS[c] || '📦'} ${c}</div>
+              <div class="all-section-more" onclick="filterCatByName('${c}')">ดูทั้งหมด →</div>
+            </div>
+            <div class="product-grid">
+              ${items.slice(0,4).map((p,i) => productCardHTML(p, allProducts.indexOf(p), i===0 && items.length>=2)).join('')}
+            </div>
+          </div>
+        </div>`;
+    }).join('');
+  } else {
+    const items = allProducts.filter(p => p.cat === cat);
+    body.innerHTML = `
+      <div class="body" style="padding:20px 16px">
+        <div style="font-size:18px;font-weight:700;margin-bottom:4px">${CAT_ICONS[cat] || ''} ${cat}</div>
+        <div style="font-size:12px;color:#888;margin-bottom:16px">${items.length} รายการ</div>
+        <div class="product-grid">
+          ${items.map((p,i) => productCardHTML(p, allProducts.indexOf(p), i===0)).join('')}
+        </div>
+      </div>`;
+  }
+}
+
+// ===== PRODUCT CARD HTML =====
+function productCardHTML(p, idx, featured = false) {
+  const badgeLabel = BADGE_LABELS[p.badge] || '';
+  const badgeClass = BADGE_CLASSES[p.badge] || '';
+  const imgContent = p.img
+    ? `<img src="${p.img}" style="width:100%;height:100%;object-fit:cover;display:block">`
+    : `<div style="width:100%;height:100%;background:linear-gradient(135deg,#f8f4f0,#e0dbd4);display:flex;align-items:center;justify-content:center;font-size:32px">${CAT_ICONS[p.cat] || '🪑'}</div>`;
+
+  return `
+    <div class="product-card ${featured ? 'featured' : ''}" onclick="openModal(${idx})">
+      <div class="p-img">
+        <div class="p-img-inner">${imgContent}</div>
+        ${badgeLabel ? `<span class="p-badge ${badgeClass}">${badgeLabel}</span>` : ''}
+      </div>
+      <div class="p-info">
+        <div class="p-name">${p.name}</div>
+        ${p.size ? `<div class="p-size">${p.size}</div>` : ''}
+        <div class="p-price">${p.price} <span>บาท</span></div>
+        ${p.install ? `<div class="p-install">ผ่อน ${p.install}</div>` : ''}
+      </div>
+      <button class="p-btn" onclick="event.stopPropagation();sendInterest('${p.name}')">สนใจ</button>
+    </div>`;
+}
+
+// ===== FILTER =====
+function filterCat(cat, btn) {
+  document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  renderCatalog(cat);
+}
+
+function filterCatByName(cat) {
+  const btn = [...document.querySelectorAll('.cat-tab')].find(t => t.textContent.includes(cat));
+  filterCat(cat, btn);
+}
+
+// ===== MODAL =====
 function openModal(i) {
-  const p = products[i];
-  document.getElementById('modal-img').className = 'modal-img ' + p.bg;
+  const p = allProducts[i];
+  const badgeLabel = BADGE_LABELS[p.badge] || '';
+
+  const imgEl = document.getElementById('modal-img');
+  if (p.img) {
+    imgEl.style.background = 'none';
+    imgEl.innerHTML = `<img src="${p.img}" style="width:100%;height:100%;object-fit:cover;border-radius:16px">`;
+  } else {
+    imgEl.style.background = 'linear-gradient(135deg,#f8f4f0,#e0dbd4)';
+    imgEl.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:48px">${CAT_ICONS[p.cat] || '🪑'}</div>`;
+  }
+
   document.getElementById('modal-cat').textContent = p.cat;
   document.getElementById('modal-name').textContent = p.name;
-  document.getElementById('modal-size').textContent = 'ขนาด ' + p.size;
+  document.getElementById('modal-size').textContent = p.size ? 'ขนาด ' + p.size : '';
   document.getElementById('modal-price').textContent = p.price + ' บาท';
+
   const inst = document.getElementById('modal-install');
-  inst.innerHTML = p.install + '<small>การผ่อนชำระ</small>';
+  if (p.install) {
+    inst.innerHTML = `${p.install}<small>การผ่อนชำระ</small>`;
+    inst.style.display = 'block';
+  } else {
+    inst.style.display = 'none';
+  }
+
   const tags = document.getElementById('modal-tags');
-  tags.innerHTML = p.tags.map(t => `<span class="modal-tag">${t}</span>`).join('');
+  const tagList = [];
+  if (badgeLabel) tagList.push(badgeLabel);
+  if (p.desc) tagList.push(p.desc);
+  tags.innerHTML = tagList.map(t => `<span class="modal-tag">${t}</span>`).join('');
+
   document.getElementById('modal-cta-btn').onclick = () => sendInterest(p.name);
   document.getElementById('modal').classList.add('open');
 }
@@ -749,6 +666,9 @@ function showToast(msg) {
   t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 3000);
 }
+
+// ===== START =====
+loadProducts();
 </script>
 
 </body>
