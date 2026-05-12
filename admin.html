@@ -644,19 +644,34 @@ let deleteId = null;
 let currentImg = null;
 
 // ===== API HELPERS =====
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxcRHYBqvoLKVSmuF-PnM8dJM4gy6cYhiElXerfPx-NMJh6Voz4s5Ntmj0Vb8HDDDE/exec';
+const ADMIN_PASSWORD  = 'admin1234';
+
+function jsonp(url) {
+  return new Promise((resolve, reject) => {
+    const cb = 'cb_' + Date.now();
+    const script = document.createElement('script');
+    script.src = url + '&callback=' + cb;
+    window[cb] = (data) => {
+      delete window[cb];
+      document.body.removeChild(script);
+      resolve(data);
+    };
+    script.onerror = () => reject(new Error('JSONP failed'));
+    document.body.appendChild(script);
+  });
+}
+
 async function apiGet() {
-  const url = APPS_SCRIPT_URL + '?action=list';
-  const res = await fetch(url);
-  const data = await res.json();
+  const data = await jsonp(APPS_SCRIPT_URL + '?action=list');
   return data.products || [];
 }
 
 async function apiCall(action, payload = {}) {
   let url = APPS_SCRIPT_URL + '?action=' + action + '&password=' + ADMIN_PASSWORD;
-  if (payload.id)      url += '&id=' + encodeURIComponent(payload.id);
+  if (payload.id)      url += '&id='   + encodeURIComponent(payload.id);
   if (payload.product) url += '&data=' + encodeURIComponent(JSON.stringify(payload.product));
-  const res = await fetch(url);
-  return res.json();
+  return jsonp(url);
 }
 
 // ===== AUTH =====
