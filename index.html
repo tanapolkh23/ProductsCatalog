@@ -435,10 +435,10 @@
 <div class="header">
   <div class="header-top">
     <div>
-      <div class="logo">MARBLE HOME</div>
-      <div class="logo-sub">Furniture Collection</div>
+      <div class="logo">SineEasy</div>
+      <div class="logo-sub">ผ่อนสินค้าทุกชนิด</div>
     </div>
-    <button class="cart-btn">💬 ติดต่อร้าน</button>
+    <button class="cart-btn" onclick="window.location.href='https://line.me/R/ti/p/@536atyco'">💬 ติดต่อร้าน</button>
   </div>
   <div class="cat-scroll" id="cat-tabs">
     <!-- render by JS -->
@@ -485,6 +485,7 @@ const BADGE_CLASSES = { ready:'badge-ready', hot:'badge-hot', new:'badge-new', s
 const CAT_ICONS = { 'ตู้เสื้อผ้า':'👔', 'เตียงนอน':'🛏', 'โต๊ะ':'🪑', 'ชั้นวาง':'📚', 'อื่นๆ':'📦' };
 
 let allProducts = [];
+let allCategories = [];
 let currentCat = 'all';
 
 // ===== FETCH DATA =====
@@ -520,8 +521,12 @@ function jsonp(url) {
 async function loadProducts() {
   showSkeleton();
   try {
-    const data = await jsonp(APPS_SCRIPT_URL + '?action=list');
-    allProducts = data.products || [];
+    const [prodData, catData] = await Promise.all([
+      jsonp(APPS_SCRIPT_URL + '?action=list'),
+      jsonp(APPS_SCRIPT_URL + '?action=list_cats')
+    ]);
+    allProducts   = prodData.products   || [];
+    allCategories = catData.categories  || [];
     renderCatTabs();
     renderCatalog('all');
   } catch (e) {
@@ -553,15 +558,15 @@ function showSkeleton() {
 
 // ===== RENDER CATEGORY TABS =====
 function renderCatTabs() {
-  const cats = ['all', ...new Set(allProducts.map(p => p.cat))];
-  const catNames = { all: 'ทั้งหมด' };
-  allProducts.forEach(p => { catNames[p.cat] = p.cat; });
+  const usedCats = [...new Set(allProducts.map(p => p.cat))];
+  const tabs = ['all', ...usedCats];
 
-  document.getElementById('cat-tabs').innerHTML = cats.map(c => `
-    <button class="cat-tab ${c === 'all' ? 'active' : ''}"
-      onclick="filterCat('${c}', this)">
-      ${c === 'all' ? 'ทั้งหมด' : (CAT_ICONS[c] || '') + ' ' + c}
-    </button>`).join('');
+  document.getElementById('cat-tabs').innerHTML = tabs.map(c => {
+    if (c === 'all') return `<button class="cat-tab active" onclick="filterCat('all', this)">ทั้งหมด</button>`;
+    const catObj = allCategories.find(x => x.name === c);
+    const icon   = catObj?.icon || '📦';
+    return `<button class="cat-tab" onclick="filterCat('${c}', this)">${icon} ${c}</button>`;
+  }).join('');
 }
 
 // ===== RENDER CATALOG =====
@@ -582,7 +587,7 @@ function renderCatalog(cat) {
         <div class="body" style="padding:20px 16px 0">
           <div class="all-section">
             <div class="all-section-header">
-              <div class="all-section-title">${CAT_ICONS[c] || '📦'} ${c}</div>
+              <div class="all-section-title">${(allCategories.find(x=>x.name===c)?.icon)||'📦'} ${c}</div>
               <div class="all-section-more" onclick="filterCatByName('${c}')">ดูทั้งหมด →</div>
             </div>
             <div class="product-grid">
@@ -611,7 +616,7 @@ function productCardHTML(p, idx, featured = false) {
   const imgs = p.img ? p.img.split('|').filter(Boolean) : [];
   const imgContent = imgs.length
     ? `<img src="${imgs[0]}" style="width:100%;height:100%;object-fit:cover;display:block">`
-    : `<div style="width:100%;height:100%;background:linear-gradient(135deg,#f8f4f0,#e0dbd4);display:flex;align-items:center;justify-content:center;font-size:32px">${CAT_ICONS[p.cat] || '🪑'}</div>`;
+    : `<div style="width:100%;height:100%;background:linear-gradient(135deg,#f8f4f0,#e0dbd4);display:flex;align-items:center;justify-content:center;font-size:32px">${(allCategories.find(c=>c.name===p.cat)?.icon)||'📦'}</div>`;
   const imgCount = imgs.length > 1 ? `<span style="position:absolute;bottom:6px;right:6px;background:#000a;color:#fff;font-size:10px;padding:2px 6px;border-radius:8px">📷 ${imgs.length}</span>` : '';
 
   return `
@@ -668,7 +673,7 @@ function openModal(i) {
       </div>`;
   } else {
     imgEl.style.background = 'linear-gradient(135deg,#f8f4f0,#e0dbd4)';
-    imgEl.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:48px">${CAT_ICONS[p.cat] || '🪑'}</div>`;
+    imgEl.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:48px">${(allCategories.find(c=>c.name===p.cat)?.icon)||'📦'}</div>`;
   }
 
   document.getElementById('modal-cat').textContent = p.cat;
