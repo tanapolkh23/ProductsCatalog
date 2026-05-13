@@ -627,7 +627,7 @@ function productCardHTML(p, idx, featured = false) {
         <div class="p-price">${p.price} <span>บาท</span></div>
         ${p.install ? `<div class="p-install">ผ่อน ${p.install}</div>` : ''}
       </div>
-      <button class="p-btn" onclick="event.stopPropagation();sendInterest('${p.name}')">สนใจ</button>
+      <button class="p-btn" onclick="event.stopPropagation();sendInterest('${p.name}','${p.price}')">สนใจ</button>
     </div>`;
 }
 
@@ -690,7 +690,7 @@ function openModal(i) {
   if (p.desc) tagList.push(p.desc);
   tags.innerHTML = tagList.map(t => `<span class="modal-tag">${t}</span>`).join('');
 
-  document.getElementById('modal-cta-btn').onclick = () => sendInterest(p.name);
+  document.getElementById('modal-cta-btn').onclick = () => sendInterest(p.name, p.price);
   document.getElementById('modal').classList.add('open');
 }
 
@@ -700,8 +700,15 @@ function closeModal(e) {
   }
 }
 
-function sendInterest(name) {
+function sendInterest(name, price) {
   document.getElementById('modal').classList.remove('open');
+  // แจ้งเตือน admin ผ่าน Apps Script → LINE
+  const url = APPS_SCRIPT_URL
+    + '?action=interest'
+    + '&name='  + encodeURIComponent(name)
+    + '&price=' + encodeURIComponent(price || '')
+    + '&shop=default';
+  jsonp(url).catch(() => {}); // ส่งแล้วไม่ต้องรอ
   showToast('✅ ส่งข้อความสนใจ "' + name + '" แล้ว!');
 }
 
