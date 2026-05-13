@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin Panel - Marble Home</title>
+<title>Admin Panel - TPIAS</title>
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
@@ -483,6 +483,77 @@ body {
 .empty-icon { font-size: 40px; margin-bottom: 12px; }
 .empty-text { font-size: 15px; }
 
+/* ===== NAV TABS ===== */
+.nav-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 0 20px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+.nav-tab {
+  padding: 12px 18px;
+  font-size: 13px;
+  font-family: 'Sarabun', sans-serif;
+  color: var(--sub);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+}
+.nav-tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+.nav-tab:hover  { color: var(--text); }
+
+/* ===== CAT FILTER ===== */
+.cat-filter-bar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+.cat-filter-btn {
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1.5px solid var(--border);
+  background: transparent;
+  color: var(--sub);
+  font-family: 'Sarabun', sans-serif;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.cat-filter-btn.active {
+  border-color: var(--gold);
+  color: var(--gold);
+  background: rgba(200,169,110,0.1);
+}
+
+/* ===== CAT LIST ===== */
+.cat-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 24px; }
+.cat-row {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.cat-icon-preview {
+  width: 40px; height: 40px;
+  border-radius: 10px;
+  background: var(--surface2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+}
+.cat-name { flex: 1; font-size: 14px; font-weight: 600; }
+.cat-count { font-size: 12px; color: var(--sub); }
+
+/* ===== PAGE ===== */
+.page { display: none; }
+.page.active { display: block; }
+
 /* Mobile */
 @media (max-width: 600px) {
   .stats-row { grid-template-columns: 1fr 1fr; }
@@ -497,13 +568,13 @@ body {
 <!-- LOGIN -->
 <div id="login-screen">
   <div class="login-box">
-    <div class="login-logo">MARBLE HOME</div>
+    <div class="login-logo">SineEasy </div>
     <div class="login-title">Admin Panel</div>
     <input class="login-field" type="text" id="login-user" placeholder="Username" autocomplete="off">
     <input class="login-field" type="password" id="login-pass" placeholder="Password" onkeydown="if(event.key==='Enter')doLogin()">
     <button class="login-btn" onclick="doLogin()">เข้าสู่ระบบ</button>
     <div class="login-error" id="login-err"></div>
-    <div style="font-size:12px;color:var(--sub);margin-top:16px;">demo: admin / 1234</div>
+    <div style="font-size:12px;color:var(--sub);margin-top:16px;"></div>
   </div>
 </div>
 
@@ -512,7 +583,7 @@ body {
   <div class="topbar">
     <div class="topbar-left">
       <span class="admin-badge">ADMIN</span>
-      <span class="topbar-title">จัดการสินค้า</span>
+      <span class="topbar-title">SineEasy  Admin</span>
     </div>
     <div class="topbar-right">
       <a href="index.html" target="_blank" class="btn-preview">👁 ดู Catalog</a>
@@ -520,32 +591,55 @@ body {
     </div>
   </div>
 
+  <!-- NAV TABS -->
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="switchPage('products', this)">📦 สินค้า</button>
+    <button class="nav-tab" onclick="switchPage('categories', this)">🏷 หมวดหมู่</button>
+  </div>
+
   <div class="main">
-    <!-- Stats -->
-    <div class="stats-row">
-      <div class="stat-card">
-        <div class="stat-label">สินค้าทั้งหมด</div>
-        <div class="stat-val" id="stat-total">0</div>
-        <div class="stat-sub">รายการ</div>
+
+    <!-- ===== PAGE: PRODUCTS ===== -->
+    <div id="page-products" class="page active">
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-label">สินค้าทั้งหมด</div>
+          <div class="stat-val" id="stat-total">0</div>
+          <div class="stat-sub">รายการ</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">หมวดหมู่</div>
+          <div class="stat-val" id="stat-cats">0</div>
+          <div class="stat-sub">หมวด</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">พร้อมส่ง</div>
+          <div class="stat-val" id="stat-ready">0</div>
+          <div class="stat-sub">รายการ</div>
+        </div>
       </div>
-      <div class="stat-card">
-        <div class="stat-label">หมวดหมู่</div>
-        <div class="stat-val" id="stat-cats">0</div>
-        <div class="stat-sub">หมวด</div>
+
+      <!-- Category filter -->
+      <div class="cat-filter-bar" id="cat-filter-bar">
+        <button class="cat-filter-btn active" data-cat="all" onclick="filterProducts('all', this)">ทั้งหมด</button>
       </div>
-      <div class="stat-card">
-        <div class="stat-label">พร้อมส่ง</div>
-        <div class="stat-val" id="stat-ready">0</div>
-        <div class="stat-sub">รายการ</div>
+
+      <div class="sec-header">
+        <div class="sec-title" id="product-list-title">รายการสินค้าทั้งหมด</div>
+        <button class="btn-add" onclick="openForm()">+ เพิ่มสินค้า</button>
       </div>
+      <div id="product-list" class="product-list"></div>
     </div>
 
-    <!-- Product list -->
-    <div class="sec-header">
-      <div class="sec-title">รายการสินค้า</div>
-      <button class="btn-add" onclick="openForm()">+ เพิ่มสินค้า</button>
+    <!-- ===== PAGE: CATEGORIES ===== -->
+    <div id="page-categories" class="page">
+      <div class="sec-header">
+        <div class="sec-title">หมวดหมู่สินค้า</div>
+        <button class="btn-add" onclick="openCatForm()">+ เพิ่มหมวดหมู่</button>
+      </div>
+      <div id="cat-list" class="cat-list"></div>
     </div>
-    <div id="product-list" class="product-list"></div>
+
   </div>
 </div>
 
@@ -580,11 +674,7 @@ body {
       <div class="form-group">
         <label class="form-label">หมวดหมู่ *</label>
         <select class="form-select" id="f-cat">
-          <option value="wardrobe">ตู้เสื้อผ้า</option>
-          <option value="bed">เตียงนอน</option>
-          <option value="table">โต๊ะ</option>
-          <option value="shelf">ชั้นวาง</option>
-          <option value="other">อื่นๆ</option>
+          <option value="">-- เลือกหมวดหมู่ --</option>
         </select>
       </div>
       <div class="form-group">
@@ -639,6 +729,38 @@ body {
   </div>
 </div>
 
+<!-- CAT FORM MODAL -->
+<div class="modal-overlay" id="cat-form-modal">
+  <div class="modal-box" style="max-width:400px">
+    <div class="modal-title" id="cat-form-title">เพิ่มหมวดหมู่ใหม่</div>
+    <div class="form-group">
+      <label class="form-label">ไอคอน Emoji</label>
+      <input class="form-input" type="text" id="cf-icon" placeholder="📦" style="font-size:24px;text-align:center">
+    </div>
+    <div class="form-group">
+      <label class="form-label">ชื่อหมวดหมู่ *</label>
+      <input class="form-input" type="text" id="cf-name" placeholder="เช่น เฟอร์นิเจอร์, มือถือ">
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeCatForm()">ยกเลิก</button>
+      <button class="btn-save" id="cat-save-btn" onclick="saveCat()">💾 บันทึก</button>
+    </div>
+  </div>
+</div>
+
+<!-- DELETE CAT CONFIRM -->
+<div class="modal-overlay" id="del-cat-modal">
+  <div class="confirm-box">
+    <div class="confirm-icon">🏷</div>
+    <div class="confirm-title">ลบหมวดหมู่?</div>
+    <div class="confirm-sub" id="del-cat-name"></div>
+    <div class="confirm-btns">
+      <button class="btn-confirm-cancel" onclick="document.getElementById('del-cat-modal').classList.remove('open')">ยกเลิก</button>
+      <button class="btn-confirm-del" onclick="confirmDeleteCat()">ลบเลย</button>
+    </div>
+  </div>
+</div>
+
 <!-- Toast -->
 <div class="toast" id="toast"></div>
 
@@ -648,10 +770,14 @@ const ADMIN_PASSWORD  = 'admin1234';
 const IMGBB_KEY       = 'aed6617dbdca6c61ba88052b3d1930de';
 const BADGE_LABELS    = { ready:'✓ พร้อมส่ง', hot:'🔥 ขายดี', new:'✨ ใหม่', sale:'💚 ลดราคา' };
 
-let products   = [];
-let editId     = null;
-let deleteId   = null;
-let imgFiles   = []; // เก็บไฟล์รูปที่รอ upload
+let products    = [];
+let categories  = [];
+let editId      = null;
+let deleteId    = null;
+let editCatId   = null;
+let deleteCatId = null;
+let imgFiles    = [];
+let currentFilter = 'all';
 
 // ===== JSONP =====
 function jsonp(url) {
@@ -665,48 +791,19 @@ function jsonp(url) {
   });
 }
 
-async function apiGet() {
-  const data = await jsonp(APPS_SCRIPT_URL + '?action=list');
-  return data.products || [];
+async function apiGet(action, params = {}) {
+  let url = APPS_SCRIPT_URL + '?action=' + action;
+  Object.entries(params).forEach(([k,v]) => url += '&' + k + '=' + encodeURIComponent(v));
+  return jsonp(url);
 }
 
 async function apiCall(action, payload = {}) {
   let url = APPS_SCRIPT_URL + '?action=' + action + '&password=' + ADMIN_PASSWORD;
   if (payload.id)      url += '&id='   + encodeURIComponent(payload.id);
   if (payload.product) url += '&data=' + encodeURIComponent(JSON.stringify(payload.product));
+  if (payload.name)    url += '&name=' + encodeURIComponent(payload.name);
+  if (payload.icon)    url += '&icon=' + encodeURIComponent(payload.icon);
   return jsonp(url);
-}
-
-// ===== UPLOAD รูปไป imgbb =====
-async function uploadToImgbb(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = async (e) => {
-      const base64 = e.target.result.split(',')[1];
-      const formData = new FormData();
-      formData.append('key', IMGBB_KEY);
-      formData.append('image', base64);
-      formData.append('name', file.name);
-      try {
-        const res  = await fetch('https://api.imgbb.com/1/upload', { method:'POST', body: formData });
-        const data = await res.json();
-        if (data.success) resolve(data.data.url);
-        else reject(new Error(data.error?.message || 'Upload failed'));
-      } catch(err) { reject(err); }
-    };
-    reader.readAsDataURL(file);
-  });
-}
-
-async function uploadAllImages() {
-  if (!imgFiles.length) return [];
-  const urls = [];
-  for (let i = 0; i < imgFiles.length; i++) {
-    showToast(`⏳ กำลัง upload รูป ${i+1}/${imgFiles.length}...`, 'success');
-    const url = await uploadToImgbb(imgFiles[i]);
-    urls.push(url);
-  }
-  return urls;
 }
 
 // ===== SESSION =====
@@ -714,7 +811,7 @@ function checkSession() {
   if (sessionStorage.getItem('admin_logged_in') === 'yes') {
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('admin-screen').style.display = 'block';
-    loadProducts();
+    loadAll();
   }
 }
 
@@ -725,7 +822,7 @@ function doLogin() {
     sessionStorage.setItem('admin_logged_in', 'yes');
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('admin-screen').style.display = 'block';
-    loadProducts();
+    loadAll();
   } else {
     document.getElementById('login-err').textContent = 'Username หรือ Password ไม่ถูกต้อง';
   }
@@ -738,45 +835,123 @@ function doLogout() {
   document.getElementById('login-pass').value = '';
 }
 
-// ===== LOAD =====
+// ===== NAV =====
+function switchPage(page, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ===== LOAD ALL =====
+async function loadAll() {
+  await Promise.all([loadCategories(), loadProducts()]);
+}
+
+// ===== LOAD CATEGORIES =====
+async function loadCategories() {
+  try {
+    const data = await apiGet('list_cats');
+    categories = data.categories || [];
+    renderCategories();
+    renderCatFilter();
+    updateCatSelect();
+  } catch(e) { console.error(e); }
+}
+
+function renderCategories() {
+  const list = document.getElementById('cat-list');
+  if (!categories.length) {
+    list.innerHTML = `<div class="empty"><div class="empty-icon">🏷</div><div class="empty-text">ยังไม่มีหมวดหมู่</div></div>`;
+    return;
+  }
+  list.innerHTML = categories.map(c => {
+    const count = products.filter(p => p.cat === c.name).length;
+    return `
+    <div class="cat-row">
+      <div class="cat-icon-preview">${c.icon || '📦'}</div>
+      <div class="cat-name">${c.name}</div>
+      <div class="cat-count">${count} สินค้า</div>
+      <div class="prod-actions">
+        <button class="btn-edit" onclick="openCatForm('${c.id}')">✏️</button>
+        <button class="btn-del"  onclick="askDeleteCat('${c.id}')">🗑</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderCatFilter() {
+  const bar = document.getElementById('cat-filter-bar');
+  const allBtn = `<button class="cat-filter-btn ${currentFilter==='all'?'active':''}" data-cat="all" onclick="filterProducts('all',this)">ทั้งหมด</button>`;
+  const catBtns = categories.map(c =>
+    `<button class="cat-filter-btn ${currentFilter===c.name?'active':''}" data-cat="${c.name}" onclick="filterProducts('${c.name}',this)">${c.icon} ${c.name}</button>`
+  ).join('');
+  bar.innerHTML = allBtn + catBtns;
+}
+
+function updateCatSelect() {
+  const sel = document.getElementById('f-cat');
+  if (!sel) return;
+  const cur = sel.value;
+  sel.innerHTML = '<option value="">-- เลือกหมวดหมู่ --</option>' +
+    categories.map(c => `<option value="${c.name}" ${cur===c.name?'selected':''}>${c.icon} ${c.name}</option>`).join('');
+}
+
+// ===== FILTER PRODUCTS =====
+function filterProducts(cat, btn) {
+  currentFilter = cat;
+  document.querySelectorAll('.cat-filter-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  const title = document.getElementById('product-list-title');
+  if (cat === 'all') {
+    title.textContent = 'รายการสินค้าทั้งหมด';
+    renderList(products);
+  } else {
+    const cat_obj = categories.find(c => c.name === cat);
+    title.textContent = `${cat_obj?.icon||''} ${cat} (${products.filter(p=>p.cat===cat).length} รายการ)`;
+    renderList(products.filter(p => p.cat === cat));
+  }
+}
+
+// ===== LOAD PRODUCTS =====
 async function loadProducts() {
   document.getElementById('product-list').innerHTML =
     `<div class="empty"><div class="empty-icon">⏳</div><div class="empty-text">กำลังโหลด...</div></div>`;
   try {
-    products = await apiGet();
-    renderList();
+    const data = await apiGet('list');
+    products = data.products || [];
+    const cats = new Set(products.map(p => p.cat));
+    document.getElementById('stat-total').textContent  = products.length;
+    document.getElementById('stat-cats').textContent   = cats.size;
+    document.getElementById('stat-ready').textContent  = products.filter(p => p.badge==='ready'||p.badge==='hot').length;
+    filterProducts(currentFilter, null);
+    renderCategories();
   } catch {
     document.getElementById('product-list').innerHTML =
-      `<div class="empty"><div class="empty-icon">⚠️</div><div class="empty-text">โหลดไม่ได้ ตรวจสอบ Apps Script</div></div>`;
+      `<div class="empty"><div class="empty-icon">⚠️</div><div class="empty-text">โหลดไม่ได้</div></div>`;
   }
 }
 
-// ===== RENDER =====
-function renderList() {
-  const list = document.getElementById('product-list');
-  const cats = new Set(products.map(p => p.cat));
-  document.getElementById('stat-total').textContent  = products.length;
-  document.getElementById('stat-cats').textContent   = cats.size;
-  document.getElementById('stat-ready').textContent  = products.filter(p => p.badge==='ready'||p.badge==='hot').length;
-
-  if (!products.length) {
-    list.innerHTML = `<div class="empty"><div class="empty-icon">📦</div><div class="empty-text">ยังไม่มีสินค้า</div></div>`;
+function renderList(list) {
+  const el = document.getElementById('product-list');
+  if (!list.length) {
+    el.innerHTML = `<div class="empty"><div class="empty-icon">📦</div><div class="empty-text">ไม่มีสินค้าในหมวดนี้</div></div>`;
     return;
   }
-  list.innerHTML = products.map(p => {
-    const imgs = p.img ? p.img.split('|').filter(Boolean) : [];
+  el.innerHTML = list.map(p => {
+    const imgs  = p.img ? p.img.split('|').filter(Boolean) : [];
+    const catObj = categories.find(c => c.name === p.cat);
     return `
     <div class="product-row">
-      <div class="prod-thumb">
-        ${imgs.length ? `<img src="${imgs[0]}" alt="${p.name}">` : '🪑'}
-        ${imgs.length > 1 ? `<span style="position:absolute;bottom:2px;right:4px;background:#000a;color:#fff;font-size:10px;padding:1px 5px;border-radius:8px">+${imgs.length-1}</span>` : ''}
+      <div class="prod-thumb" style="position:relative">
+        ${imgs.length ? `<img src="${imgs[0]}" alt="${p.name}">` : (catObj?.icon||'📦')}
+        ${imgs.length > 1 ? `<span style="position:absolute;bottom:2px;right:2px;background:#000a;color:#fff;font-size:9px;padding:1px 4px;border-radius:6px">+${imgs.length-1}</span>` : ''}
       </div>
       <div class="prod-info">
         <div class="prod-name">${p.name}</div>
-        <div class="prod-meta">${p.size ? p.size+' · ' : ''}${p.price ? p.price+' บาท' : ''}</div>
+        <div class="prod-meta">${p.cat ? (catObj?.icon||'')+ ' '+p.cat+' · ' : ''}${p.price ? p.price+' บาท' : ''}</div>
       </div>
-      <div class="prod-cat-badge">${p.cat||''}</div>
-      ${p.badge ? `<span style="font-size:12px;color:var(--gold)">${BADGE_LABELS[p.badge]||''}</span>` : ''}
+      ${p.badge ? `<span style="font-size:11px;color:var(--gold);flex-shrink:0">${BADGE_LABELS[p.badge]||''}</span>` : ''}
       <div class="prod-actions">
         <button class="btn-edit" onclick="openForm('${p.id}')">✏️ แก้ไข</button>
         <button class="btn-del"  onclick="askDelete('${p.id}')">🗑</button>
@@ -785,30 +960,27 @@ function renderList() {
   }).join('');
 }
 
-// ===== FORM =====
+// ===== PRODUCT FORM =====
 function openForm(id = null) {
   editId = id; imgFiles = [];
   document.getElementById('form-title').textContent = id ? 'แก้ไขสินค้า' : 'เพิ่มสินค้าใหม่';
   ['f-name','f-size','f-price','f-install','f-desc'].forEach(i => document.getElementById(i).value = '');
-  document.getElementById('f-cat').value = 'ตู้เสื้อผ้า';
+  document.getElementById('f-cat').value = '';
   document.querySelectorAll('.badge-opt').forEach(b => b.classList.remove('sel'));
   resetImgPreview();
+  updateCatSelect();
 
   if (id) {
     const p = products.find(x => x.id == id);
     if (p) {
       document.getElementById('f-name').value    = p.name    || '';
-      document.getElementById('f-cat').value     = p.cat     || 'ตู้เสื้อผ้า';
+      document.getElementById('f-cat').value     = p.cat     || '';
       document.getElementById('f-size').value    = p.size    || '';
       document.getElementById('f-price').value   = p.price   ? p.price.replace(/,/g,'') : '';
       document.getElementById('f-install').value = p.install || '';
       document.getElementById('f-desc').value    = p.desc    || '';
       if (p.badge) document.querySelector(`.badge-opt[data-val="${p.badge}"]`)?.classList.add('sel');
-      // โหลดรูปเดิม
-      if (p.img) {
-        const urls = p.img.split('|').filter(Boolean);
-        renderImgPreviews(urls);
-      }
+      if (p.img)   renderImgPreviews(p.img.split('|').filter(Boolean));
     }
   }
   document.getElementById('form-modal').classList.add('open');
@@ -822,108 +994,162 @@ function closeForm() {
 async function saveProduct() {
   const name  = document.getElementById('f-name').value.trim();
   const price = document.getElementById('f-price').value.trim();
+  const cat   = document.getElementById('f-cat').value;
   if (!name || !price) { showToast('กรุณากรอกชื่อสินค้าและราคา', 'error'); return; }
+  if (!cat)            { showToast('กรุณาเลือกหมวดหมู่', 'error'); return; }
 
   const btn = document.querySelector('.btn-save');
   btn.textContent = '⏳ กำลังบันทึก...'; btn.disabled = true;
 
   try {
-    // 1. upload รูปใหม่ก่อน
-    const newUrls = await uploadAllImages();
-
-    // 2. รวมกับรูปเดิม (ถ้า edit)
-    let existingUrls = [];
-    if (editId) {
-      const old = products.find(p => p.id == editId);
-      existingUrls = old?.img ? old.img.split('|').filter(Boolean) : [];
-    }
-    // เก็บรูปที่ยังอยู่ใน preview (ไม่ถูกลบ)
+    const newUrls  = await uploadAllImages();
     const keptUrls = getKeptUrls();
     const allUrls  = [...keptUrls, ...newUrls];
-
     const badge    = document.querySelector('.badge-opt.sel')?.dataset.val || '';
     const priceStr = parseInt(price.replace(/,/g,'')).toLocaleString();
     const product  = {
-      name,
-      cat:     document.getElementById('f-cat').value,
-      size:    document.getElementById('f-size').value.trim(),
+      name, cat, badge,
       price:   priceStr,
+      size:    document.getElementById('f-size').value.trim(),
       install: document.getElementById('f-install').value.trim(),
       desc:    document.getElementById('f-desc').value.trim(),
-      badge,
-      img:     allUrls.join('|') // เก็บหลาย URL คั่นด้วย |
+      img:     allUrls.join('|')
     };
 
-    if (editId) {
-      await apiCall('update', { id: editId, product });
-    } else {
-      await apiCall('add', { product });
-    }
+    if (editId) { await apiCall('update', { id: editId, product }); }
+    else        { await apiCall('add',    { product }); }
 
     showToast(editId ? '✅ แก้ไขแล้ว' : '✅ เพิ่มสินค้าแล้ว', 'success');
     closeForm();
     await loadProducts();
   } catch(err) {
-    showToast('❌ ' + (err.message || 'บันทึกไม่สำเร็จ'), 'error');
+    showToast('❌ ' + (err.message||'บันทึกไม่สำเร็จ'), 'error');
   } finally {
     btn.textContent = '💾 บันทึก'; btn.disabled = false;
   }
 }
 
-// ===== IMAGE PREVIEW (หลายรูป) =====
+// ===== CATEGORY FORM =====
+function openCatForm(id = null) {
+  editCatId = id;
+  document.getElementById('cat-form-title').textContent = id ? 'แก้ไขหมวดหมู่' : 'เพิ่มหมวดหมู่ใหม่';
+  document.getElementById('cf-name').value = '';
+  document.getElementById('cf-icon').value = '📦';
+  if (id) {
+    const c = categories.find(x => x.id == id);
+    if (c) {
+      document.getElementById('cf-name').value = c.name || '';
+      document.getElementById('cf-icon').value = c.icon || '📦';
+    }
+  }
+  document.getElementById('cat-form-modal').classList.add('open');
+}
+
+function closeCatForm() {
+  document.getElementById('cat-form-modal').classList.remove('open');
+  editCatId = null;
+}
+
+async function saveCat() {
+  const name = document.getElementById('cf-name').value.trim();
+  const icon = document.getElementById('cf-icon').value.trim() || '📦';
+  if (!name) { showToast('กรุณากรอกชื่อหมวดหมู่', 'error'); return; }
+
+  const btn = document.getElementById('cat-save-btn');
+  btn.textContent = '⏳...'; btn.disabled = true;
+
+  try {
+    if (editCatId) { await apiCall('update_cat', { id: editCatId, name, icon }); }
+    else           { await apiCall('add_cat',    { name, icon }); }
+    showToast(editCatId ? '✅ แก้ไขหมวดหมู่แล้ว' : '✅ เพิ่มหมวดหมู่แล้ว', 'success');
+    closeCatForm();
+    await loadCategories();
+  } catch { showToast('❌ บันทึกไม่สำเร็จ', 'error'); }
+  finally  { btn.textContent = '💾 บันทึก'; btn.disabled = false; }
+}
+
+function askDeleteCat(id) {
+  deleteCatId = id;
+  const c = categories.find(x => x.id == id);
+  document.getElementById('del-cat-name').textContent = `"${c?.name||'หมวดหมู่นี้'}"`;
+  document.getElementById('del-cat-modal').classList.add('open');
+}
+
+async function confirmDeleteCat() {
+  document.getElementById('del-cat-modal').classList.remove('open');
+  try {
+    await apiCall('delete_cat', { id: deleteCatId });
+    showToast('🗑 ลบหมวดหมู่แล้ว', 'success');
+    await loadCategories();
+  } catch { showToast('❌ ลบไม่สำเร็จ', 'error'); }
+}
+
+// ===== IMGBB UPLOAD =====
+async function uploadToImgbb(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      const base64 = e.target.result.split(',')[1];
+      const body   = new URLSearchParams();
+      body.append('key', IMGBB_KEY);
+      body.append('image', base64);
+      try {
+        const res  = await fetch('https://api.imgbb.com/1/upload', {
+          method:'POST',
+          headers:{'Content-Type':'application/x-www-form-urlencoded'},
+          body: body.toString()
+        });
+        const data = await res.json();
+        if (data.success) resolve(data.data.display_url);
+        else reject(new Error(JSON.stringify(data.error)));
+      } catch(err) { reject(err); }
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+async function uploadAllImages() {
+  const urls = [];
+  for (let i = 0; i < imgFiles.length; i++) {
+    showToast(`⏳ upload รูป ${i+1}/${imgFiles.length}...`, 'success');
+    urls.push(await uploadToImgbb(imgFiles[i]));
+  }
+  return urls;
+}
+
 function handleImg(e) {
   const files = Array.from(e.target.files);
-  if (!files.length) return;
-  const oversized = files.filter(f => f.size > 10 * 1024 * 1024);
-  if (oversized.length) { showToast('รูปบางไฟล์ใหญ่เกิน 10MB', 'error'); return; }
   imgFiles = [...imgFiles, ...files];
-  // preview รูปใหม่
   files.forEach(file => {
     const reader = new FileReader();
     reader.onload = ev => addImgPreview(ev.target.result, null, file.name);
     reader.readAsDataURL(file);
   });
-  e.target.value = ''; // reset input
+  e.target.value = '';
 }
 
-function addImgPreview(src, existingUrl = null, label = '') {
+function addImgPreview(src, existingUrl=null, label='') {
   const wrap = document.getElementById('img-preview-list');
   const div  = document.createElement('div');
-  div.className = 'img-thumb';
+  div.className   = 'img-thumb';
   div.dataset.url = existingUrl || '';
   div.dataset.new = existingUrl ? 'false' : 'true';
-  div.innerHTML = `
-    <img src="${src}" alt="${label}">
-    <button class="img-thumb-del" onclick="removeImgThumb(this)">✕</button>
-    ${!existingUrl ? '<span class="img-thumb-badge">ใหม่</span>' : ''}
-  `;
+  div.innerHTML   = `<img src="${src}" alt="${label}"><button class="img-thumb-del" onclick="removeImgThumb(this)">✕</button>${!existingUrl?'<span class="img-thumb-badge">ใหม่</span>':''}`;
   wrap.appendChild(div);
   document.getElementById('upload-placeholder').style.display = 'none';
 }
 
-function renderImgPreviews(urls) {
-  urls.forEach(url => addImgPreview(url, url));
-}
+function renderImgPreviews(urls) { urls.forEach(url => addImgPreview(url, url)); }
 
 function removeImgThumb(btn) {
-  const div  = btn.closest('.img-thumb');
-  const isNew = div.dataset.new === 'true';
-  const label = div.querySelector('img').alt;
-  if (isNew) {
-    // ลบออกจาก imgFiles
-    imgFiles = imgFiles.filter(f => f.name !== label);
-  }
+  const div = btn.closest('.img-thumb');
+  if (div.dataset.new === 'true') imgFiles = imgFiles.filter((_,i) => i !== [...document.querySelectorAll('.img-thumb[data-new="true"]')].indexOf(div));
   div.remove();
-  if (!document.querySelectorAll('.img-thumb').length) {
-    document.getElementById('upload-placeholder').style.display = 'block';
-  }
+  if (!document.querySelectorAll('.img-thumb').length) document.getElementById('upload-placeholder').style.display = 'block';
 }
 
 function getKeptUrls() {
-  return Array.from(document.querySelectorAll('.img-thumb'))
-    .filter(d => d.dataset.new === 'false')
-    .map(d => d.dataset.url)
-    .filter(Boolean);
+  return Array.from(document.querySelectorAll('.img-thumb[data-new="false"]')).map(d => d.dataset.url).filter(Boolean);
 }
 
 function resetImgPreview() {
@@ -933,18 +1159,11 @@ function resetImgPreview() {
   imgFiles = [];
 }
 
-// ===== BADGE =====
-function toggleBadge(btn) {
-  const was = btn.classList.contains('sel');
-  document.querySelectorAll('.badge-opt').forEach(b => b.classList.remove('sel'));
-  if (!was) btn.classList.add('sel');
-}
-
-// ===== DELETE =====
+// ===== DELETE PRODUCT =====
 function askDelete(id) {
   deleteId = id;
   const p = products.find(x => x.id == id);
-  document.getElementById('del-name').textContent = `"${p?.name || 'สินค้านี้'}"`;
+  document.getElementById('del-name').textContent = `"${p?.name||'สินค้านี้'}"`;
   document.getElementById('del-modal').classList.add('open');
 }
 
@@ -957,6 +1176,13 @@ async function confirmDelete() {
   } catch { showToast('❌ ลบไม่สำเร็จ', 'error'); }
 }
 
+// ===== BADGE =====
+function toggleBadge(btn) {
+  const was = btn.classList.contains('sel');
+  document.querySelectorAll('.badge-opt').forEach(b => b.classList.remove('sel'));
+  if (!was) btn.classList.add('sel');
+}
+
 // ===== TOAST =====
 function showToast(msg, type='success') {
   const t = document.getElementById('toast');
@@ -964,11 +1190,11 @@ function showToast(msg, type='success') {
   setTimeout(() => t.classList.remove('show'), 3000);
 }
 
-document.getElementById('form-modal').addEventListener('click', e => {
-  if (e.target === document.getElementById('form-modal')) closeForm();
-});
-document.getElementById('del-modal').addEventListener('click', e => {
-  if (e.target === document.getElementById('del-modal')) document.getElementById('del-modal').classList.remove('open');
+// ===== MODAL CLOSE =====
+['form-modal','del-modal','cat-form-modal','del-cat-modal'].forEach(id => {
+  document.getElementById(id)?.addEventListener('click', e => {
+    if (e.target.id === id) document.getElementById(id).classList.remove('open');
+  });
 });
 
 checkSession();
