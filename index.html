@@ -704,7 +704,7 @@ function sendInterest(name, price) {
   document.getElementById('modal').classList.remove('open');
   // เปิด LINE แชทกับร้าน พร้อมข้อความสนใจสินค้า
   const msg = `สนใจสินค้า: ${name}${price ? ' ราคา ' + price + ' บาท' : ''}`;
-  window.open('https://line.me/R/oaMessage/@536atyco/?' + encodeURIComponent(msg));
+  window.location.href = 'https://line.me/R/oaMessage/@536atyco/?' + encodeURIComponent(msg);
 }
 
 function showToast(msg) {
